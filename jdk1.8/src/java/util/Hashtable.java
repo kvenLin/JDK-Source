@@ -154,7 +154,7 @@ public class Hashtable<K,V>
      *
      * @serial
      */
-    private float loadFactor;
+    private float loadFactor;//在构造方法中设置为默认的0.75f
 
     /**
      * The number of times this Hashtable has been structurally modified
@@ -206,6 +206,7 @@ public class Hashtable<K,V>
     /**
      * Constructs a new, empty hashtable with a default initial capacity (11)
      * and load factor (0.75).
+     * 设置默认的初始容量为11,负载因子为0.75
      */
     public Hashtable() {
         this(11, 0.75f);
