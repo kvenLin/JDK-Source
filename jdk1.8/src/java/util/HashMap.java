@@ -493,6 +493,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *
      * @param   m the map whose mappings are to be placed in this map
      * @throws  NullPointerException if the specified map is null
+     * 传入另一个map的构造函数
      */
     public HashMap(Map<? extends K, ? extends V> m) {
         this.loadFactor = DEFAULT_LOAD_FACTOR;
@@ -507,17 +508,25 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * true (relayed to method afterNodeInsertion).
      */
     final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
+        //m的元素个数
         int s = m.size();
         if (s > 0) {
+            //判断table是否已经初始化
             if (table == null) { // pre-size
+                //未初始化,计算需要的容量,添加元素的个数 / 负载因子 + 1 = 总容量,+ 1操作避免下一次添加操作进行扩容
                 float ft = ((float)s / loadFactor) + 1.0F;
+                //ft小于最大容量就赋值ft,否则赋值为最大容量
                 int t = ((ft < (float)MAXIMUM_CAPACITY) ?
                          (int)ft : MAXIMUM_CAPACITY);
+                //若大于当前扩容临界值
                 if (t > threshold)
+                    //计算新的临界值
                     threshold = tableSizeFor(t);
-            }
+            }//table不为null,若添加的元素个数大于临界值
             else if (s > threshold)
+                //进行扩容
                 resize();
+            //添加m中的元素
             for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
                 K key = e.getKey();
                 V value = e.getValue();
@@ -579,16 +588,20 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         //当table的长度大于0且根据hash的摸计算得到对应的索引元素不为空
         if ((tab = table) != null && (n = tab.length) > 0 &&
             (first = tab[(n - 1) & hash]) != null) {
-            //当一个节点的hash相等,key内存地址相等,key对象的内容相等
+            //线对第一个节点进行判断,当一个节点的hash相等,key内存地址相等,key对象的内容相等
             if (first.hash == hash && // always check first node
                 ((k = first.key) == key || (key != null && key.equals(k))))
                 //满足条件后返回对应的节点
                 return first;
+            //第一个节点的条件不满足的情况下,进行遍历链表结构或树结构查找是否有对应的值
             if ((e = first.next) != null) {
                 //判断当前节点是否为TreeNode,当Map中的某个链表存储的长度过长会自动转换为树结构
                 if (first instanceof TreeNode)
+                    //遍历树结构取出对应的值
                     return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+                //链表结构,一直遍历直到节点为null
                 do {
+                    //若当前节点满足条件就进行返回该节点
                     if (e.hash == hash &&
                         ((k = e.key) == key || (key != null && key.equals(k))))
                         return e;
@@ -647,33 +660,45 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         if ((p = tab[i = (n - 1) & hash]) == null)//当n为2的次方数时(扩容时必须已经考虑到这个条件),满足(n - 1) & hash 等价于 hash % n,这里采用&运算性能更高
             tab[i] = newNode(hash, key, value, null);
         else {
+            //若当索引处有节点元素
             Node<K,V> e; K k;
+            //如果key相等
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k))))
+                //直接覆盖
                 e = p;
-            //判断当前节点是否是TreeNode
+            //key不相等的情况,判断当前节点是否是TreeNode
             else if (p instanceof TreeNode)
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+            //key不相等,在链表后添加新节点
             else {
+                //遍历树结构
                 for (int binCount = 0; ; ++binCount) {
+                    //树结构中没有对应的key
                     if ((e = p.next) == null) {
+                        //添加新的节点
                         p.next = newNode(hash, key, value, null);
                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
                             //将当前链表结构转换成对应的树结构
                             treeifyBin(tab, hash);
                         break;
                     }
+                    //树中有对应的key的节点,跳出遍历
                     if (e.hash == hash &&
                         ((k = e.key) == key || (key != null && key.equals(k))))
                         break;
+                    //即 p = p.next
                     p = e;
                 }
             }
+            //若e不为空则说明存在当前key的节点
             if (e != null) { // existing mapping for key
                 V oldValue = e.value;
                 if (!onlyIfAbsent || oldValue == null)
+                    //将新value赋值给节点e
                     e.value = value;
                 afterNodeAccess(e);
+                //返回当前key对应的旧的value
                 return oldValue;
             }
         }
@@ -1788,7 +1813,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         size = 0;
     }
 
-    // Callbacks to allow LinkedHashMap post-actions
+    // Callbacks to allow LinkedHashMap post-actions,回调LinkedHashMap的实现方法
     void afterNodeAccess(Node<K,V> p) { }
     void afterNodeInsertion(boolean evict) { }
     void afterNodeRemoval(Node<K,V> p) { }
@@ -1815,7 +1840,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * linked node.
      */
     static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
-        TreeNode<K,V> parent;  // red-black tree links
+        TreeNode<K,V> parent;  // red-black tree links, 红黑树结构
         TreeNode<K,V> left;
         TreeNode<K,V> right;
         TreeNode<K,V> prev;    // needed to unlink next upon deletion
@@ -1864,6 +1889,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
          * Finds the node starting at root p with the given hash and key.
          * The kc argument caches comparableClassFor(key) upon first use
          * comparing keys.
+         * 找到树结构中对应的hash和key对应的节点的值
          */
         final TreeNode<K,V> find(int h, Object k, Class<?> kc) {
             TreeNode<K,V> p = this;

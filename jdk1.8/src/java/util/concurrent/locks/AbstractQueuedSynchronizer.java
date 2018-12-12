@@ -529,6 +529,7 @@ public abstract class AbstractQueuedSynchronizer
 
     /**
      * The synchronization state.
+     * 共享变量state,使用volatile进行修饰
      */
     private volatile int state;
 
@@ -536,6 +537,7 @@ public abstract class AbstractQueuedSynchronizer
      * Returns the current value of synchronization state.
      * This operation has memory semantics of a {@code volatile} read.
      * @return current state value
+     * 返回同步状态
      */
     protected final int getState() {
         return state;
@@ -544,6 +546,7 @@ public abstract class AbstractQueuedSynchronizer
     /**
      * Sets the value of synchronization state.
      * This operation has memory semantics of a {@code volatile} write.
+     * 设置同步状态的值
      * @param newState the new state value
      */
     protected final void setState(int newState) {
@@ -556,6 +559,7 @@ public abstract class AbstractQueuedSynchronizer
      * This operation has memory semantics of a {@code volatile} read
      * and write.
      *
+     * 原子地（CAS操作）将同步状态值设置为给定值update如果当前同步状态的值等于expect（期望值）
      * @param expect the expected value
      * @param update the new value
      * @return {@code true} if successful. False return indicates that the actual
