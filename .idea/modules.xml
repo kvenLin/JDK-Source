@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JDK-Source.iml" filepath="$PROJECT_DIR$/JDK-Source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JVM-Learning/JVM-Learning.iml" filepath="$PROJECT_DIR$/JVM-Learning/JVM-Learning.iml" />
       <module fileurl="file://$PROJECT_DIR$/Test/Test.iml" filepath="$PROJECT_DIR$/Test/Test.iml" />
       <module fileurl="file://$PROJECT_DIR$/jdk1.8/jdk1.8.iml" filepath="$PROJECT_DIR$/jdk1.8/jdk1.8.iml" />
     </modules>

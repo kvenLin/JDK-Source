@@ -52,7 +52,7 @@ jdk源码学习
 * table扩容临界值为当前容量的2/3,只有满足当前条件才会进行扩容
 * 每次扩容为原有容量的2倍
 
-### 主要方法
+### 主要方法 
 * public T get()
     * 获取当前线程
     * 得到对应的ThreadLocalMap
@@ -74,3 +74,5 @@ jdk源码学习
 * protected T initialValue()
     * 默认初始的ThreadLocal返回的value为null,一般会对该方法进行重写
 * [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ThreadLocal/ThreadLocalDemo.java)
+### 关于为什么ThreadLocal中的Entry申明为弱引用?
+[参考博客](https://www.cnblogs.com/waterystone/p/6612202.html)
