@@ -106,6 +106,6 @@
 * 使用句柄
 * 直接指针(hotspot)
 
-![对象访问定位方式](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_029.png)
+![对象访问定位方式](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_030.png)
 
 ## 垃圾回收
