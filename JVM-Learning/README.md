@@ -75,7 +75,7 @@
 * Padding(对齐填充)
 
 ### 对象的创建
-![对象的创建流程](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/image/选区_027.png)
+![对象的创建流程](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_027.png)
 
 * 给对象分配内存
 * 线程安全性问题
@@ -100,12 +100,12 @@
     * 线程同步: 效率降低
     * 本地线程分配缓冲TLAB(Thread Local Allocation Buffer)
     
-![本地线程分配缓冲](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/image/选区_028.png)
+![本地线程分配缓冲](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_028.png))
 
 ### 对象的访问定位
 * 使用句柄
 * 直接指针(hotspot)
 
-![对象访问定位方式](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/image/选区_029.png)
+![对象访问定位方式](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_029.png)
 
 ## 垃圾回收
