@@ -100,7 +100,7 @@
     * 线程同步: 效率降低
     * 本地线程分配缓冲TLAB(Thread Local Allocation Buffer)
     
-![本地线程分配缓冲](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_028.png))
+![本地线程分配缓冲](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_028.png)
 
 ### 对象的访问定位
 * 使用句柄
@@ -108,4 +108,85 @@
 
 ![对象访问定位方式](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_030.png)
 
+----------------
+
 ## 垃圾回收
+### 调试参数:
+* -verbose:gc ; 打印垃圾回收的日志信息,是一个简单的日志信息
+* -XX:+PrintGCDetails ; 查看详细的垃圾回收日志信息
+### 如何判定对象为垃圾对象
+* 引用计数法
+    * 在对象中添加一个引用计数器,当有地方引用这个对象的时候引用计数器的值就+1,在引用失效的时候,计数器的值就-1
+    * ![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_031.png)
+* 可达性分析法
+    * ![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_032.png)
+* [测试对内存对象内部相互引用的回收](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/GCTest/GCMain.java)
+* 作为GCRoot的对象
+    * 虚拟机栈的局部变量表
+    * 方法区的类属性所**引用的对象**
+    * 方法区中常量所**引用的对象**
+    * 本地方法栈中**引用的对象**
+### 如何回收
+* 回收策略
+    * 标记-清除算法
+        * 标记和清除过程都相对较慢,效率不是特别高
+        * 空间问题:清除后得到的不连续空间影响后续的分配,当分配空间找不到时又会触发一次垃圾回收
+    * 复制算法
+        * ![复制清除算法实现垃圾回收](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_033.png)
+    * 标记-整理算法(一般针对老年代进行回收)
+    * 分代收集算法(标记-整理和复制算法的结合)
+        * 针对不同的内存区域(新生代,老年代)选择不同的回收算法
+### 垃圾收集器
+* Serial
+    * 最基本,发展最悠久的
+    * 单线程的
+* ParNew
+    * 多线程的
+    * 和Serial算法基本一致
+* CMS(Concurrent Mark Sweep)
+    * sun公司
+    * 采用的是标记清除算法
+    * 工作过程:
+        * 初始标记
+        * 并发标记
+        * 重新标记
+        * 并发清理
+    * 优点:
+        * 并发收集: 边生成垃圾的同时可以边进行垃圾回收
+        * 低停顿
+    * 缺点:
+        * 占用大量的CPU资源
+        * 无法处理浮动的垃圾
+        * 出现 Concurrent Mode Failure
+        * 空间碎片
+* Parallel Scavenge
+    * 复制算法(新生代收集器,针对新生代内存)
+    * 多线程
+    * 可控制的吞吐量 = 运行用户代码的时间 / (运行用户代码的时间 + 垃圾回收所占用时间)
+    * -XX:MaxGCPauseMills 垃圾收集器最大停顿时间(单位ms)
+    * -XX:GCTimeRatio 吞吐量大小(0 - 100)
+        * 默认值为99
+* G1
+    * 采用标记-整理
+    * 步骤:
+        * 初始标记
+        * 并发标记
+        * 最终标记
+        * 筛选回收
+## 内存分配
+### 内存分配策略
+* 优先分配到Eden区
+* 大对象直接分配到老年代
+* 长期存活的对象分配到老年代
+* 空间分配担保(即分配空间不足,会向老年代借空间)
+* 动态对象的年龄判断
+### Eden区域
+* 不进行配置时默认使用的回收器是Parallel
+* 相关参数学习:
+    * -Xms20M -Xmx20M 限定堆内存大小20M
+    * -Xml10M 指定新生代内存10M
+    * -XX:SurvivorRatio=8 指定Eden区内存为8M
+* 内存分配测试:
+    * [创建对象内存分配和分配器使用分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest1.java)
+    * [关于Eden区内存分配的分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest2.java)
+
