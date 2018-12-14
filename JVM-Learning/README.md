@@ -197,4 +197,4 @@
     * -XX:-HandlePromotionFailure 禁用空间分配担保,"+"号为开启,默认为开启
 ### 逃逸分析和栈上分配
 * 逃逸分析:
-    * 分析对象的作用域
+    * [分析对象的作用域](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/StackTest/StackAllocation.java)
