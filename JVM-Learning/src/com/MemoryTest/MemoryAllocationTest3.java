@@ -14,7 +14,7 @@ package com.MemoryTest;
  * -XX:SurvivorRatio=8 指定Eden区内存为8M
  * 则两个Survivor区 默认各自为1M
  */
-public class MemoryDistributeTest3 {
+public class MemoryAllocationTest3 {
 
     private static final int M = 1024 * 1024;
 

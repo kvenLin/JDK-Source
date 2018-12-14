@@ -10,7 +10,7 @@ package com.MemoryTest;
  * 参数配置:
  * -verbose:gc -XX:+PrintGCDetails 打印GC日志
  */
-public class MemoryDistributeTest1 {
+public class MemoryAllocationTest1 {
 
     public static void main(String[] args) {
 //        byte[] b1 = new byte[4 * 1024 * 1024];//4M

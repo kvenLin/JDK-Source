@@ -186,8 +186,15 @@
     * -Xms20M -Xmx20M 限定堆内存大小20M
     * -Xml10M 指定新生代内存10M
     * -XX:SurvivorRatio=8 指定Eden区内存为8M
+    * -XX:PretenureSizeThreshold=6M 大对象判定阀值为6M
 * 内存分配测试:
-    * [创建对象内存分配和分配器使用分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest1.java)
-    * [关于Eden区内存分配的分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest2.java)
-    * [关于大对象判定分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest3.java)
+    * [创建对象内存分配和分配器使用分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryAllocationTest1.java)
+    * [关于Eden区内存分配的分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryAllocationTest2.java)
+    * [关于大对象判定分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryAllocationTest3.java)
 
+### 空间分配担保
+* 参数:
+    * -XX:-HandlePromotionFailure 禁用空间分配担保,"+"号为开启,默认为开启
+### 逃逸分析和栈上分配
+* 逃逸分析:
+    * 分析对象的作用域
