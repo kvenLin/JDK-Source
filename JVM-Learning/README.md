@@ -189,4 +189,5 @@
 * 内存分配测试:
     * [创建对象内存分配和分配器使用分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest1.java)
     * [关于Eden区内存分配的分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest2.java)
+    * [关于大对象判定分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryDistributeTest3.java)
 
