@@ -131,9 +131,9 @@
     * 标记-清除算法
         * 标记和清除过程都相对较慢,效率不是特别高
         * 空间问题:清除后得到的不连续空间影响后续的分配,当分配空间找不到时又会触发一次垃圾回收
-    * 复制算法
+    * 复制算法(适用于新生代内存)
         * ![复制清除算法实现垃圾回收](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_033.png)
-    * 标记-整理算法(一般针对老年代进行回收)
+    * 标记-整理算法(适用于老年代进行回收)
     * 分代收集算法(标记-整理和复制算法的结合)
         * 针对不同的内存区域(新生代,老年代)选择不同的回收算法
 ### 垃圾收集器
@@ -227,4 +227,48 @@
 ### jconsole
 * [使用教程](https://docs.oracle.com/javase/1.5.0/docs/guide/management/jconsole.html)
 
+##Class 文件
+### Class文件结构
+* 是一组以8位字节为基础单位的二进制流,各个数据项目严格按照顺序紧凑的排在Class文件中,中间没有分隔符
+* 采用Class文件格式的目的是为了提高文件的读取效率
+* Class文件中有两种数据类型:
+    * 无符号数
+    * 表
+* [结构分析](https://blog.csdn.net/sinat_38259539/article/details/78248454)
+### 设计理念和意义
 
+![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_035.png)
+
+## 类加载
+加载流程:
+![加载流程图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_036.png)
+### 类加载机制
+* 概述:
+> 虚拟机把描述类的数据从Class文件加载到内存,并对数据进行校验,解析和初始化,
+最终形成可以被虚拟机直接使用的Java类型,这就是虚拟机的类型加载机制
+* 懒加载: 用的时候才进行加载
+
+### 类加载的时机
+* 当初始化一个类时,如果发现其父类还没有进行过初始化,则需要先触发其父类的初始化
+* 当虚拟机启动时,用户需要指定一个执行的主类(包含main()方法的那个类),虚拟机会先初始化这个主类
+* [运行实例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/ClassLoad/test1/Child.java)
+
+#### 不会被初始化的例子
+* 通过子类引用父类的静态字段,子类不会被初始化,只会初始化父类
+* 通过数组定义来引用类
+* 调用类的常量
+* [运行实例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/ClassLoad/test2)
+
+### 加载
+* 通过一个类的全限定名来获取定义此类的二进制流
+* 将这个字节流所代表的静态存储结构转化为方法区的运行时数据
+* 在内存中生成一个代表这个类的Class对象(**特例,这里的Class对象不会放到堆中,而是放到方法区中**),作为这个类的各种数据的访问入口
+#### 加载源
+* 文件
+    * Class文件
+    * jar文件
+* 网络
+* 计算生成一个二进制流
+*由其他文件生成
+    * jsp
+* 数据库
