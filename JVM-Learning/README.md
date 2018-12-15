@@ -160,7 +160,7 @@
         * 出现 Concurrent Mode Failure
         * 空间碎片
 * Parallel Scavenge
-    * 复制算法(新生代收集器,针对新生代内存)
+    * 复制算法(默认的新生代收集器,针对新生代内存)
     * 多线程
     * 可控制的吞吐量 = 运行用户代码的时间 / (运行用户代码的时间 + 垃圾回收所占用时间)
     * -XX:MaxGCPauseMills 垃圾收集器最大停顿时间(单位ms)
@@ -184,6 +184,7 @@
 * 不进行配置时默认使用的回收器是Parallel
 * 相关参数学习:
     * -Xms20M -Xmx20M 限定堆内存大小20M
+    * -XX:+UseSerialGC 使用Serial收集器
     * -Xml10M 指定新生代内存10M
     * -XX:SurvivorRatio=8 指定Eden区内存为8M
     * -XX:PretenureSizeThreshold=6M 大对象判定阀值为6M
@@ -198,3 +199,32 @@
 ### 逃逸分析和栈上分配
 * 逃逸分析:
     * [分析对象的作用域](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/StackTest/StackAllocation.java)
+## JVM常用工具和主要参数
+* [使用教程参考博客](https://blog.csdn.net/wyy101301/article/details/80481630)
+### jps
+* java process status
+* 参数:
+    * -m 查看运行时传入主类的参数
+    * -v 查看虚拟机参数
+    * -l 运行的主类的全名或者是jar包名称
+    * [具体参数使用文档](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jps.html)
+    
+### jstat
+* 监视虚拟机的各种运行状态信息
+* 类装载信息,内存,垃圾收集,jit编译的信息
+* [具体参数使用方法文档](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jstat.html)
+### jinfo
+* 实时查看和调整虚拟机的各项参数
+* -flag [+/-]<name\> : 启动或禁用某个参数
+* -flag <name\>=<value\> : 某个参数值
+### jmap
+* Memory map for java : 生成堆存储快照
+* 使用方法 : jmap -dump:live,format=b,file=/home/hk/heap.bin <pid\>
+    * live若当前进程是活着的才会进行操作
+    * format=b , 二进制格式
+    * file=/home/hk/heap.bin , 指定生成的文件路径
+    * <pid\> 指定对应的进程号
+### jconsole
+* [使用教程](https://docs.oracle.com/javase/1.5.0/docs/guide/management/jconsole.html)
+
+
