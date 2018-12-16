@@ -1,0 +1,16 @@
+// 同级目录下使用 javap -c xxx.class > 指定输出文件路径,得到当前文件内容
+Compiled from "Test1.java"
+public class com.JavacTest.Test1 {
+  public com.JavacTest.Test1();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public int add(int, int);
+    Code:
+       0: iload_1
+       1: iload_2
+       2: iadd
+       3: ireturn
+}

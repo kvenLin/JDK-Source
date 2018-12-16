@@ -16,7 +16,7 @@
 
 #### Java虚拟机栈
 * 虚拟机栈描述的是Java方法执行的动态内存模型
-* 栈帧
+* 栈帧,具体结构解析: [运行时栈帧结构](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/README.md#运行时栈帧结构)
     * 每个方法都会创建一个栈帧,伴随着方法从创建到执行完成.
     * 用于存放: **局部变量表,操作数栈,动态链接,方法出口**等
     * ![栈帧结构](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_037.png)
@@ -122,7 +122,7 @@
 * 可达性分析法
     * ![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_032.png)
 * [测试对内存对象内部相互引用的回收](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/GCTest/GCMain.java)
-* 作为GCRoot的对象
+* 可以作为GCRoot的对象
     * 虚拟机栈的局部变量表
     * 方法区的类属性所**引用的对象**
     * 方法区中常量所**引用的对象**
@@ -308,5 +308,31 @@ char '0';
 ### 双亲委派模型
 * 实际就是子类加载器加载时会先扔给父类进行加载,如果父类加载不了抛出异常后,再交给子类进行加载
 * [对ClassLoader.java的loadClass()加载流程进行分析](https://github.com/kvenLin/JDK-Source/jdk1.8/src/java/lang/ClassLoader.java),第403行
+
 ## 虚拟机字节码执行引擎
 ### 运行时栈帧结构
+* [参考博客](http://www.cnblogs.com/noKing/p/8167700.html)
+* 局部变量表
+    * 是一片逻辑连续的内存空间,最小单位是Slot,用来存放方法参数和方法内部定义的局部变量,没有具体大小,默认32位
+    * byte,boolean,short,char,int,float,reference,returnAddress类型都可以用32位空间内存存放
+    * Java中的long和double类型是64位,占用两个Slot
+* 操作数栈
+    * 对于byte,short以及char类型值在眼入到操作数栈之前,也会被转换成int
+    * [操作数栈指令执行流程](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/JavacTest/)
+* 动态链接
+    * 实际就是一个解析找到调用方法的引用
+* 方法的返回地址
+    * 进入一个方法完成后需要返回被调用处,就是返回地址
+* 附加信息
+    * 虚拟机实现自已可以添加一些没有的规范到栈帧中,取决于虚拟机
+   
+### 方法调用 
+* 解析调用
+    * 在编译阶段就进行了确定调用的方法称为解析调用
+    * [测试用例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/MethodInvokeTest/test1/)
+* 分派调用
+    * 在运行期间才能确定调用的方法就是分派调用
+    * 静态分派代用
+        * [测试用例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/MethodInvokeTest/test2/)
+    * 动态分派调用
+        * 方法的重写即动态分派调用
