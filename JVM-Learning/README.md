@@ -305,6 +305,8 @@ char '0';
 * 初始化是执行<clinit\>()方法的过程
     * [初始化示例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/ClassLoad/test3/InitTest1.java)
 > <init\>()是初始化实例对象的,<clinit\>()是初始化类或者接口的
-
+### 双亲委派模型
+* 实际就是子类加载器加载时会先扔给父类进行加载,如果父类加载不了抛出异常后,再交给子类进行加载
+* [对ClassLoader.java的loadClass()加载流程进行分析](https://github.com/kvenLin/JDK-Source/jdk1.8/src/java/lang/ClassLoader.java),第403行
 ## 虚拟机字节码执行引擎
 ### 运行时栈帧结构

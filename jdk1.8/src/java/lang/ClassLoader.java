@@ -397,19 +397,23 @@ public abstract class ClassLoader {
      *
      * @throws  ClassNotFoundException
      *          If the class could not be found
+     *
+     * 双亲委派模型加载方法
      */
     protected Class<?> loadClass(String name, boolean resolve)
-        throws ClassNotFoundException
+        throws ClassNotFoundException//
     {
         synchronized (getClassLoadingLock(name)) {
             // First, check if the class has already been loaded
-            Class<?> c = findLoadedClass(name);
-            if (c == null) {
+            Class<?> c = findLoadedClass(name);//判断该类是否被加载过
+            if (c == null) {//没有被加载才进行加载
                 long t0 = System.nanoTime();
                 try {
-                    if (parent != null) {
+                    if (parent != null) {//父类不为空时
+                        //将加载任务交给父类进行加载
                         c = parent.loadClass(name, false);
                     } else {
+                        //如果父类为null交给启动类进行加载
                         c = findBootstrapClassOrNull(name);
                     }
                 } catch (ClassNotFoundException e) {
@@ -417,9 +421,13 @@ public abstract class ClassLoader {
                     // from the non-null parent class loader
                 }
 
+                //判断父类是否加载成功
                 if (c == null) {
                     // If still not found, then invoke findClass in order
                     // to find the class.
+                    /**
+                     * 父类加载后仍然是null,则没有加载成功,则在当前方法进行具体的加载过程
+                     */
                     long t1 = System.nanoTime();
                     c = findClass(name);
 
