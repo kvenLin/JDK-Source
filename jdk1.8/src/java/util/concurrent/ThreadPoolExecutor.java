@@ -1187,11 +1187,11 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      *         {@code maximumPoolSize < corePoolSize}
      * @throws NullPointerException if {@code workQueue} is null
      */
-    public ThreadPoolExecutor(int corePoolSize,
-                              int maximumPoolSize,
-                              long keepAliveTime,
-                              TimeUnit unit,
-                              BlockingQueue<Runnable> workQueue) {
+    public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数
+                              int maximumPoolSize,//线程最大数
+                              long keepAliveTime,//多余的核心线程树的部分可以存活的时间,当前时间内还没有接收到任务,这些线程就会被回收
+                              TimeUnit unit,//保持空闲时间的时间单位
+                              BlockingQueue<Runnable> workQueue) {//任务队列
         this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
              Executors.defaultThreadFactory(), defaultHandler);
     }

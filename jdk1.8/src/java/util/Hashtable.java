@@ -126,6 +126,7 @@ import java.util.function.BiFunction;
  * @see     HashMap
  * @see     TreeMap
  * @since JDK1.0
+ * 线程安全
  */
 public class Hashtable<K,V>
     extends Dictionary<K,V>

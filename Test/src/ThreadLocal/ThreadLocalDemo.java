@@ -23,7 +23,7 @@ public class ThreadLocalDemo {
                  * Entry为null时返回对应的初始Value,这里是Integer类型的对象0
                  */
                 local.set(new Integer(5));
-                int num = local.get().intValue();//0
+                int num = local.get();//0
                 num ++;
                 System.out.println(Thread.currentThread().getName() + ":" + num);
             }, "Thread-" + i);

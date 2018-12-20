@@ -537,6 +537,9 @@ public class PrintStream extends FilterOutputStream
         }
     }
 
+    /**
+     * 换行方法
+     */
     private void newLine() {
         try {
             synchronized (this) {

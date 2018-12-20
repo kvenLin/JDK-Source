@@ -520,6 +520,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @param index the index of the element to be removed
      * @return the element that was removed from the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
+     * 移除指定索引上的元素
      */
     public E remove(int index) {
         rangeCheck(index);
@@ -548,6 +549,7 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @param o element to be removed from this list, if present
      * @return <tt>true</tt> if this list contained the specified element
+     * 移除指定元素
      */
     public boolean remove(Object o) {
         if (o == null) {

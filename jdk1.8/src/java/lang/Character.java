@@ -4567,7 +4567,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @since  1.5
      */
     public static Character valueOf(char c) {
-        if (c <= 127) { // must cache
+        if (c <= 127) { // must cache 0 -- 127
             return CharacterCache.cache[(int)c];
         }
         return new Character(c);

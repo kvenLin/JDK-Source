@@ -56,13 +56,13 @@ public final class Long extends Number implements Comparable<Long> {
      * A constant holding the minimum value a {@code long} can
      * have, -2<sup>63</sup>.
      */
-    @Native public static final long MIN_VALUE = 0x8000000000000000L;
+    @Native public static final long MIN_VALUE = 0x8000000000000000L;//-2^63
 
     /**
      * A constant holding the maximum value a {@code long} can
      * have, 2<sup>63</sup>-1.
      */
-    @Native public static final long MAX_VALUE = 0x7fffffffffffffffL;
+    @Native public static final long MAX_VALUE = 0x7fffffffffffffffL;//2^63 - 1
 
     /**
      * The {@code Class} instance representing the primitive type
@@ -835,7 +835,7 @@ public final class Long extends Number implements Comparable<Long> {
     public static Long valueOf(long l) {
         final int offset = 128;
         if (l >= -128 && l <= 127) { // will cache
-            return LongCache.cache[(int)l + offset];
+            return LongCache.cache[(int)l + offset];// l + 128
         }
         return new Long(l);
     }

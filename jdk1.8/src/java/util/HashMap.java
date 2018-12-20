@@ -133,6 +133,7 @@ import java.util.function.Function;
  * @see     TreeMap
  * @see     Hashtable
  * @since   1.2
+ * 线程不安全
  */
 public class HashMap<K,V> extends AbstractMap<K,V>
     implements Map<K,V>, Cloneable, Serializable {
@@ -341,7 +342,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         // key.hashCode()：返回散列值也就是hashcode
         // ^ ：按位异或
         // >>>:无符号右移，忽略符号位，空位都以0补齐
-        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);//相对于取模运算而言,运算效率高速度快
     }
 
     /**
@@ -463,7 +464,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             throw new IllegalArgumentException("Illegal load factor: " +
                                                loadFactor);
         this.loadFactor = loadFactor;
-        this.threshold = tableSizeFor(initialCapacity);
+        this.threshold = tableSizeFor(initialCapacity);//调整为2^n的大小
     }
 
     /**
@@ -662,15 +663,15 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         else {
             //若当索引处有节点元素
             Node<K,V> e; K k;
-            //如果key相等
+            //1.如果key相等
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k))))
                 //直接覆盖
                 e = p;
-            //key不相等的情况,判断当前节点是否是TreeNode
+            //2.key不相等的情况,判断当前节点是否是TreeNode,即是红黑树的情况
             else if (p instanceof TreeNode)
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
-            //key不相等,在链表后添加新节点
+            //3.key不相等,在链表后添加新节点,即链表的情况
             else {
                 //遍历树结构
                 for (int binCount = 0; ; ++binCount) {
@@ -738,8 +739,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             newCap = oldThr;
         else {               // zero initial threshold signifies using defaults
             //临界值<=0表示还没有进行初始化,使用默认的初始容量进行初始化
-            newCap = DEFAULT_INITIAL_CAPACITY;
-            newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+            newCap = DEFAULT_INITIAL_CAPACITY;//16
+            newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);//12
         }
         if (newThr == 0) {
             float ft = (float)newCap * loadFactor;
@@ -749,11 +750,11 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         threshold = newThr;
         @SuppressWarnings({"rawtypes","unchecked"})
                 //根据newCap进行生成table
-            Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+            Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];//16大小的数组
         table = newTab;//将新的table赋值给table属性
         //将oldTab中的值赋值给newTab
         if (oldTab != null) {
-            for (int j = 0; j < oldCap; ++j) {
+            for (int j = 0; j < oldCap; ++j) {//遍历所有元素
                 Node<K,V> e;
                 if ((e = oldTab[j]) != null) {
                     oldTab[j] = null;
@@ -767,7 +768,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                         Node<K,V> next;
                         do {
                             next = e.next;
-                            if ((e.hash & oldCap) == 0) {
+                            if ((e.hash & oldCap) == 0) {//判断倒数第五位是否为0
                                 if (loTail == null)
                                     loHead = e;
                                 else

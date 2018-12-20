@@ -1,0 +1,95 @@
+Compiled from "StringTest.java"
+public class String.StringTest {
+  public String.StringTest();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: new           #2                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+       7: new           #4                  // class java/lang/String
+      10: dup
+      11: ldc           #5                  // String hello
+      13: invokespecial #6                  // Method java/lang/String."<init>":(Ljava/lang/String;)V
+      16: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: new           #4                  // class java/lang/String
+      22: dup
+      23: ldc           #8                  // String world
+      25: invokespecial #6                  // Method java/lang/String."<init>":(Ljava/lang/String;)V
+      28: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      34: astore_1
+      35: getstatic     #10                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      38: aload_1
+      39: invokevirtual #11                 // Method java/lang/String.intern:()Ljava/lang/String;
+      42: aload_1
+      43: if_acmpne     50
+      46: iconst_1
+      47: goto          51
+      50: iconst_0
+      51: invokevirtual #12                 // Method java/io/PrintStream.println:(Z)V
+      54: new           #2                  // class java/lang/StringBuilder
+      57: dup
+      58: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+      61: new           #4                  // class java/lang/String
+      64: dup
+      65: ldc           #5                  // String hello
+      67: invokespecial #6                  // Method java/lang/String."<init>":(Ljava/lang/String;)V
+      70: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: new           #4                  // class java/lang/String
+      76: dup
+      77: ldc           #8                  // String world
+      79: invokespecial #6                  // Method java/lang/String."<init>":(Ljava/lang/String;)V
+      82: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      88: astore_2
+      89: getstatic     #10                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      92: aload_2
+      93: invokevirtual #11                 // Method java/lang/String.intern:()Ljava/lang/String;
+      96: aload_2
+      97: if_acmpne     104
+     100: iconst_1
+     101: goto          105
+     104: iconst_0
+     105: invokevirtual #12                 // Method java/io/PrintStream.println:(Z)V
+     108: new           #4                  // class java/lang/String
+     111: dup
+     112: ldc           #13                 // String String3
+     114: invokespecial #6                  // Method java/lang/String."<init>":(Ljava/lang/String;)V
+     117: astore_3
+     118: getstatic     #10                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     121: aload_3
+     122: aload_3
+     123: invokevirtual #11                 // Method java/lang/String.intern:()Ljava/lang/String;
+     126: if_acmpne     133
+     129: iconst_1
+     130: goto          134
+     133: iconst_0
+     134: invokevirtual #12                 // Method java/io/PrintStream.println:(Z)V
+     137: ldc           #14                 // String clfbest //可以看到编译时期就进行了字符串的拼接
+     139: astore        4
+     141: ldc           #14                 // String clfbest
+     143: astore        5
+     145: getstatic     #10                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     148: aload         4
+     150: aload         5
+     152: if_acmpne     159
+     155: iconst_1
+     156: goto          160
+     159: iconst_0
+     160: invokevirtual #12                 // Method java/io/PrintStream.println:(Z)V
+     163: getstatic     #10                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     166: aload         4
+     168: invokevirtual #11                 // Method java/lang/String.intern:()Ljava/lang/String;
+     171: aload         4
+     173: if_acmpne     180
+     176: iconst_1
+     177: goto          181
+     180: iconst_0
+     181: invokevirtual #12                 // Method java/io/PrintStream.println:(Z)V
+     184: return
+}

@@ -111,7 +111,7 @@ import java.util.regex.PatternSyntaxException;
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
     /** The value is used for character storage. */
-    private final char value[];
+    private final char value[];//底层使用字符数组存储字符串,final修饰的value指向一个地址之后就无法进行修改
 
     /** Cache the hash code for the string */
     private int hash; // Default to 0
@@ -149,7 +149,7 @@ public final class String
      *         A {@code String}
      */
     public String(String original) {
-        this.value = original.value;
+        this.value = original.value;//传入字符数组
         this.hash = original.hash;
     }
 
@@ -163,6 +163,12 @@ public final class String
      *         The initial value of the string
      */
     public String(char value[]) {
+        /**
+         * 这里为什么采用拷贝的方式?而不是直接赋值?
+         * String内部的value想要达到的目的是想通过final修后不能再进行修改,
+         * 如果直接赋值,则指向的是同一块地址,这里便可以修改外部的value的值从而更改了内部的value;
+         * 为了避免上述的情况所以采用了拷贝的方式.
+         */
         this.value = Arrays.copyOf(value, value.length);
     }
 
@@ -962,10 +968,10 @@ public final class String
      * @see  #equalsIgnoreCase(String)
      */
     public boolean equals(Object anObject) {
-        if (this == anObject) {
+        if (this == anObject) {//比较地址
             return true;
         }
-        if (anObject instanceof String) {
+        if (anObject instanceof String) {//判断是否是String类型
             String anotherString = (String)anObject;
             int n = value.length;
             if (n == anotherString.value.length) {
@@ -980,6 +986,7 @@ public final class String
                 return true;
             }
         }
+        //不是String类型直接返回false
         return false;
     }
 

@@ -45,7 +45,7 @@
 
 ## JVM的内存管理
 ### 运行时数据区
-![结构图示](https://images2015.cnblogs.com/blog/1182497/201706/1182497-20170616192739978-1176032049.png)
+![结构图示](https://img-blog.csdn.net/20180621164446655?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmRlcmx1c3RMZWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 #### 程序计数器
 * 是一块较小的内存空间,可以看作是当前线程所执行的字节码的行号指示器
 * 线程独占
@@ -96,6 +96,7 @@
     * 原因: 效率低,成本高
     
 ### 运行时常量池
+* [关于常量池所处位置](https://blog.csdn.net/wanderlustLee/article/details/80762851)
 * 创建对象时存放
 * StringTable(可以想象成HashSet): 避免创建对象的重复
 * [结合代码示例理解heap和运行时常量池](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/ConstantPoolTest.java)

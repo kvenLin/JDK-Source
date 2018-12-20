@@ -84,21 +84,21 @@ public class LinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable
 {
-    transient int size = 0;
+    transient int size = 0;//初始大小万为0
 
     /**
      * Pointer to first node.
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
-    transient Node<E> first;
+    transient Node<E> first;//记录第一个位置的节点
 
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
      *            (last.next == null && last.item != null)
      */
-    transient Node<E> last;
+    transient Node<E> last;//记录最后位置的节点
 
     /**
      * Constructs an empty list.
@@ -116,11 +116,12 @@ public class LinkedList<E>
      */
     public LinkedList(Collection<? extends E> c) {
         this();
-        addAll(c);
+        addAll(c);//添加所有元素
     }
 
     /**
      * Links e as first element.
+     * 插入元素e成为first节点
      */
     private void linkFirst(E e) {
         final Node<E> f = first;
@@ -136,6 +137,7 @@ public class LinkedList<E>
 
     /**
      * Links e as last element.
+     * 在末尾添加元素e作为last节点
      */
     void linkLast(E e) {
         final Node<E> l = last;
@@ -151,6 +153,7 @@ public class LinkedList<E>
 
     /**
      * Inserts element e before non-null Node succ.
+     * 在succ节点前插入新元素e
      */
     void linkBefore(E e, Node<E> succ) {
         // assert succ != null;
@@ -167,6 +170,7 @@ public class LinkedList<E>
 
     /**
      * Unlinks non-null first node f.
+     * 将first的非空节点进行删除
      */
     private E unlinkFirst(Node<E> f) {
         // assert f == first && f != null;
@@ -178,7 +182,7 @@ public class LinkedList<E>
         if (next == null)
             last = null;
         else
-            next.prev = null;
+            next.prev = null;//确保之前的first节点没有引用,即为了GC回收
         size--;
         modCount++;
         return element;
@@ -186,6 +190,7 @@ public class LinkedList<E>
 
     /**
      * Unlinks non-null last node l.
+     * 将last节点进行删除
      */
     private E unlinkLast(Node<E> l) {
         // assert l == last && l != null;
@@ -205,6 +210,7 @@ public class LinkedList<E>
 
     /**
      * Unlinks non-null node x.
+     * 将该节点从链表中脱离出去
      */
     E unlink(Node<E> x) {
         // assert x != null;
@@ -237,6 +243,7 @@ public class LinkedList<E>
      *
      * @return the first element in this list
      * @throws NoSuchElementException if this list is empty
+     * 获取第一个元素
      */
     public E getFirst() {
         final Node<E> f = first;
@@ -250,6 +257,7 @@ public class LinkedList<E>
      *
      * @return the last element in this list
      * @throws NoSuchElementException if this list is empty
+     * 获取最后一个元素
      */
     public E getLast() {
         final Node<E> l = last;
@@ -263,6 +271,7 @@ public class LinkedList<E>
      *
      * @return the first element from this list
      * @throws NoSuchElementException if this list is empty
+     * 移除第一个节点元素,并将其返回
      */
     public E removeFirst() {
         final Node<E> f = first;
@@ -276,6 +285,7 @@ public class LinkedList<E>
      *
      * @return the last element from this list
      * @throws NoSuchElementException if this list is empty
+     * 移除最后一个节点元素,并返回该元素
      */
     public E removeLast() {
         final Node<E> l = last;
@@ -288,9 +298,10 @@ public class LinkedList<E>
      * Inserts the specified element at the beginning of this list.
      *
      * @param e the element to add
+     * 添加第一个元素
      */
     public void addFirst(E e) {
-        linkFirst(e);
+        linkFirst(e);//插入元素e作为first点
     }
 
     /**
@@ -299,6 +310,7 @@ public class LinkedList<E>
      * <p>This method is equivalent to {@link #add}.
      *
      * @param e the element to add
+     * 添加最后一个元素
      */
     public void addLast(E e) {
         linkLast(e);
@@ -382,9 +394,10 @@ public class LinkedList<E>
      * @param c collection containing elements to be added to this list
      * @return {@code true} if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
+     * 添加所有元素
      */
     public boolean addAll(Collection<? extends E> c) {
-        return addAll(size, c);
+        return addAll(size, c);//0,c
     }
 
     /**
@@ -403,47 +416,49 @@ public class LinkedList<E>
      * @throws NullPointerException if the specified collection is null
      */
     public boolean addAll(int index, Collection<? extends E> c) {
-        checkPositionIndex(index);
+        checkPositionIndex(index);//检查索引
 
-        Object[] a = c.toArray();
-        int numNew = a.length;
+        Object[] a = c.toArray();//获取当前c集合的所有元素
+        int numNew = a.length;//获取长度
         if (numNew == 0)
             return false;
 
         Node<E> pred, succ;
-        if (index == size) {
+        if (index == size) {//判断是否为最后的索引
             succ = null;
             pred = last;
         } else {
-            succ = node(index);
-            pred = succ.prev;
+            succ = node(index);//获取index索引位置的节点的前驱节点
+            pred = succ.prev;//获取index索引位置的节点的后继节点
         }
 
-        for (Object o : a) {
+        for (Object o : a) {//遍历添加的元素
             @SuppressWarnings("unchecked") E e = (E) o;
-            Node<E> newNode = new Node<>(pred, e, null);
-            if (pred == null)
-                first = newNode;
+            Node<E> newNode = new Node<>(pred, e, null);//实例节点元素
+            if (pred == null)//没有前驱节点
+                first = newNode;//设置当前添加节点为first节点
             else
-                pred.next = newNode;
-            pred = newNode;
+                pred.next = newNode;//在前驱节点后进行添加
+            pred = newNode;//设置为前驱节点
         }
-
-        if (succ == null) {
-            last = pred;
+        //添加完成后
+        if (succ == null) {//之前如果后继节点为null
+            last = pred;//对last节点进行赋值
         } else {
+            //后继节点不为空,进行指针的重新定位
             pred.next = succ;
             succ.prev = pred;
         }
 
-        size += numNew;
-        modCount++;
+        size += numNew;//更新size
+        modCount++;//对修改次数进行更新
         return true;
     }
 
     /**
      * Removes all of the elements from this list.
      * The list will be empty after this call returns.
+     * 清除所有元素
      */
     public void clear() {
         // Clearing all of the links between nodes is "unnecessary", but:
@@ -471,10 +486,11 @@ public class LinkedList<E>
      * @param index index of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException {@inheritDoc}
+     * 获取指定索引元素
      */
     public E get(int index) {
-        checkElementIndex(index);
-        return node(index).item;
+        checkElementIndex(index);//检测index是否越界
+        return node(index).item;//返回对应的元素
     }
 
     /**
@@ -485,12 +501,13 @@ public class LinkedList<E>
      * @param element element to be stored at the specified position
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException {@inheritDoc}
+     * 更新指定索引新元素
      */
     public E set(int index, E element) {
         checkElementIndex(index);
         Node<E> x = node(index);
         E oldVal = x.item;
-        x.item = element;
+        x.item = element;//直接覆盖
         return oldVal;
     }
 
@@ -502,11 +519,12 @@ public class LinkedList<E>
      * @param index index at which the specified element is to be inserted
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
+     * 在指定索引位置进行插入新的元素
      */
     public void add(int index, E element) {
         checkPositionIndex(index);
 
-        if (index == size)
+        if (index == size)//判断索引是否为尾节点的索引
             linkLast(element);
         else
             linkBefore(element, node(index));
@@ -520,6 +538,7 @@ public class LinkedList<E>
      * @param index the index of the element to be removed
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException {@inheritDoc}
+     * 移除指定元素
      */
     public E remove(int index) {
         checkElementIndex(index);
@@ -528,6 +547,7 @@ public class LinkedList<E>
 
     /**
      * Tells if the argument is the index of an existing element.
+     * 判断当前索引是否存在元素
      */
     private boolean isElementIndex(int index) {
         return index >= 0 && index < size;
@@ -536,9 +556,10 @@ public class LinkedList<E>
     /**
      * Tells if the argument is the index of a valid position for an
      * iterator or an add operation.
+     * 判断是否是合法索引
      */
     private boolean isPositionIndex(int index) {
-        return index >= 0 && index <= size;
+        return index >= 0 && index <= size;//判断是否是有效的索引[0 , size]
     }
 
     /**
@@ -557,21 +578,32 @@ public class LinkedList<E>
 
     private void checkPositionIndex(int index) {
         if (!isPositionIndex(index))
+            //若不是有效的索引抛出索引越界的异常
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
 
     /**
      * Returns the (non-null) Node at the specified element index.
+     * 获取index索引位置的节点
      */
     Node<E> node(int index) {
         // assert isElementIndex(index);
 
-        if (index < (size >> 1)) {
+        /**
+         * 设计思路:
+         * 对查找的索引进行判断是在链表的前半部分还是在后半部分,
+         * 即通过两种方式进行遍历:
+         *      1. 从first节点进行遍历,即从前往后遍历
+         *      2. 从last节点进行遍历,即从后往前遍历
+         */
+        if (index < (size >> 1)) {//size >> 1 = size / 2
+            //从前往后查找
             Node<E> x = first;
             for (int i = 0; i < index; i++)
                 x = x.next;
             return x;
         } else {
+            //从后往前查找
             Node<E> x = last;
             for (int i = size - 1; i > index; i--)
                 x = x.prev;
@@ -591,23 +623,25 @@ public class LinkedList<E>
      * @param o element to search for
      * @return the index of the first occurrence of the specified element in
      *         this list, or -1 if this list does not contain the element
+     * 查询当前元素的第一个索引位置,从前向后遍历
      */
     public int indexOf(Object o) {
         int index = 0;
-        if (o == null) {
+        if (o == null) {//判断是否为空
             for (Node<E> x = first; x != null; x = x.next) {
                 if (x.item == null)
                     return index;
                 index++;
             }
         } else {
+            //不为空
             for (Node<E> x = first; x != null; x = x.next) {
-                if (o.equals(x.item))
+                if (o.equals(x.item))//判断值是否相等
                     return index;
                 index++;
             }
         }
-        return -1;
+        return -1;//不存在返回-1
     }
 
     /**
@@ -620,6 +654,7 @@ public class LinkedList<E>
      * @param o element to search for
      * @return the index of the last occurrence of the specified element in
      *         this list, or -1 if this list does not contain the element
+     * 查询当前元素的最后一个索引的位置,从后向前遍历
      */
     public int lastIndexOf(Object o) {
         int index = size;
@@ -646,6 +681,7 @@ public class LinkedList<E>
      *
      * @return the head of this list, or {@code null} if this list is empty
      * @since 1.5
+     * 返回第一个元素
      */
     public E peek() {
         final Node<E> f = first;
@@ -656,7 +692,7 @@ public class LinkedList<E>
      * Retrieves, but does not remove, the head (first element) of this list.
      *
      * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
+     * @throws NoSuchElementException if this list is empty,不同与peek返回的null,这里对null进行抛异常处理
      * @since 1.5
      */
     public E element() {
@@ -668,6 +704,7 @@ public class LinkedList<E>
      *
      * @return the head of this list, or {@code null} if this list is empty
      * @since 1.5
+     * 移除第一个first元素节点
      */
     public E poll() {
         final Node<E> f = first;
@@ -678,8 +715,9 @@ public class LinkedList<E>
      * Retrieves and removes the head (first element) of this list.
      *
      * @return the head of this list
-     * @throws NoSuchElementException if this list is empty
+     * @throws NoSuchElementException if this list is empty,对null链表进行抛异常处理
      * @since 1.5
+     * 移除第一个first元素节点
      */
     public E remove() {
         return removeFirst();
@@ -691,6 +729,7 @@ public class LinkedList<E>
      * @param e the element to add
      * @return {@code true} (as specified by {@link Queue#offer})
      * @since 1.5
+     * 在末尾添加元素e
      */
     public boolean offer(E e) {
         return add(e);
@@ -703,6 +742,7 @@ public class LinkedList<E>
      * @param e the element to insert
      * @return {@code true} (as specified by {@link Deque#offerFirst})
      * @since 1.6
+     * 在first节点插入元素e
      */
     public boolean offerFirst(E e) {
         addFirst(e);
@@ -715,6 +755,7 @@ public class LinkedList<E>
      * @param e the element to insert
      * @return {@code true} (as specified by {@link Deque#offerLast})
      * @since 1.6
+     * 在last节点插入元素e
      */
     public boolean offerLast(E e) {
         addLast(e);
@@ -754,6 +795,7 @@ public class LinkedList<E>
      * @return the first element of this list, or {@code null} if
      *     this list is empty
      * @since 1.6
+     * 查看第一个元素同时删除
      */
     public E pollFirst() {
         final Node<E> f = first;
@@ -767,6 +809,7 @@ public class LinkedList<E>
      * @return the last element of this list, or {@code null} if
      *     this list is empty
      * @since 1.6
+     * 查看最后一个元素同时删除
      */
     public E pollLast() {
         final Node<E> l = last;
@@ -781,6 +824,7 @@ public class LinkedList<E>
      *
      * @param e the element to push
      * @since 1.6
+     * 将链表当成栈进行push操作,每次从first节点插入
      */
     public void push(E e) {
         addFirst(e);
@@ -796,6 +840,7 @@ public class LinkedList<E>
      *         of the stack represented by this list)
      * @throws NoSuchElementException if this list is empty
      * @since 1.6
+     * 删除栈顶元素,将链表的first节点作为栈顶
      */
     public E pop() {
         return removeFirst();
@@ -809,6 +854,7 @@ public class LinkedList<E>
      * @param o element to be removed from this list, if present
      * @return {@code true} if the list contained the specified element
      * @since 1.6
+     * 删除指定的第一个元素
      */
     public boolean removeFirstOccurrence(Object o) {
         return remove(o);
@@ -862,6 +908,7 @@ public class LinkedList<E>
      *         sequence), starting at the specified position in the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @see List#listIterator(int)
+     * 返回指定索引位置以后的所有元素的迭代器
      */
     public ListIterator<E> listIterator(int index) {
         checkPositionIndex(index);
@@ -876,7 +923,7 @@ public class LinkedList<E>
 
         ListItr(int index) {
             // assert isPositionIndex(index);
-            next = (index == size) ? null : node(index);
+            next = (index == size) ? null : node(index);//获取当前索引的节点
             nextIndex = index;
         }
 
@@ -967,6 +1014,10 @@ public class LinkedList<E>
         }
     }
 
+    /**
+     * LinkedList实际是通过双向链表进行实现
+     * @param <E>
+     */
     private static class Node<E> {
         E item;
         Node<E> next;
@@ -1016,6 +1067,7 @@ public class LinkedList<E>
      * themselves are not cloned.)
      *
      * @return a shallow copy of this {@code LinkedList} instance
+     * 获取相同的链表结构
      */
     public Object clone() {
         LinkedList<E> clone = superClone();

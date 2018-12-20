@@ -1,5 +1,45 @@
 # JDK-Source
 jdk源码学习
+## String
+* String使用char[]保存字符串的值,而且还是静态常量
+* 当相同的字符串被多次创建(使用双引号显式声明)时,**字符串常量对象会被创建在常量池中**,且只会有一个对象
+* intern(): 去常量池中寻找当前的字符串常量
+    * 如果有则直接返回常量池中的对象
+    * 如果没有会将当前的字符串引用(jdk1.7之后)放入常量池(如果是jdk1.7之前会直接复制到常量池),然后返回
+* 字符串对象的+号运算,会在堆内存中生成新的字符串对象
+### 常考面试题
+* question1:[结合代码理解](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/ConstantPoolTest.java)
+    * String s1 = "abc"; 
+      String s2 = "abc";
+      String s3 = new String("abc");
+       问有几个实例对象?
+    >答: 两个对象,堆中一个"abc",常量池一个"abc"
+    * [参考博客](https://blog.csdn.net/Mypromise_TFS/article/details/81504137)
+* question2:[这段代码运行结果是什么](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/String/StringTest.java)
+    * 分析: ![String实例创建流程](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/选区_044.png)
+## 整型缓存
+* 包括:
+    * Integer(-128 --- +127)
+    * Long(-128 --- +127)
+    * Short(-128 --- +127)
+    * Byte(-128 -- +127)
+    * Character(0 -- +127): 表示标准的128个ASCII字符
+* 缓存机制,结合源码查看
+    * 缓存内容: 存在一个cache[]数组中
+    * 类加载时通过静态代码块进行初始化
+* [运行示例分析](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/IntegerTest/IntegerDemo.java)
+
+## 重载
+* 方法名相同,参数不同
+* java选择调用哪个重载方法,是在编译时期决定的
+    * 运行时类型虽然不同,但是编译时类型是相同的,所以选用了同一个重载
+* 对重载方法的选择是**静态的**,对覆盖方法的选择是动态的
+* 覆盖: 在子类中重写父类的方法
+    * java对调用那个覆盖方法,是运行时决定的,依据是对象的运行时类型
+    * 如果子类覆盖了覆盖的方法,调用子类实例的方法,
+    那么调用的就是子类中重写的方法,因为运行时类型一定是子类的类型,
+    引用子类的那个类型可以是父类类型
+    
 ## ArrayList
 * 构造函数
     * 无参: 底层默认创建一个空数组,在进行第一次添加操作时进行扩容为默认的**容量10**
@@ -45,6 +85,10 @@ jdk源码学习
 ### HashMap引出的求余%和与运算&转换问题
 * 当n = 2的x次幂时,满足转换条件,**(n - 1) & hash 等价于 hash % n**
 * [参考博客](https://www.cnblogs.com/ysocean/p/9054804.html)
+
+## LinkedHashMap
+* 继承HashMap
+* 底层是双向链表
 ## ThreadLocal
 * 一般叫做线程本地本地变量
 * 实际使用ThreadLocalMap进行保存
@@ -76,3 +120,22 @@ jdk源码学习
 * [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ThreadLocal/ThreadLocalDemo.java)
 ### 关于为什么ThreadLocal中的Entry申明为弱引用?
 [参考博客](https://www.cnblogs.com/waterystone/p/6612202.html)
+### 相关问题
+* 为什使用弱引用?
+> 当ThreadLocal = null后,还存存在Thread中的ThreadLocalMap中的Entry对添加的obj的引用,
+如果Entry不使用弱引用将只有等到整个线程运行完后才能进行GC回收,而这里的Entry所存储的obj我们已经不能从ThreadLocalMap中取出使用,
+所以这里的Entry已经可以进行回收,只有使用弱引用才能被垃圾回收器回收.
+
+## IO流
+* 字节流
+* 字符流:用来操作字符的
+* Input流:读数据
+* Output流:写数据
+* 输入输出是相对于本机内存的
+* java代码中的汉字是使用的Unicode进行编码实现的(Unicode兼容了ASCII)
+* char类型长度是两个字节,能够表示中文,因为Unicode字符集中中文对应的数字,用两个字节就足够表示了
+* utf-8编码,使用的就是unicode字符集
+    * utf-8是用一个运算规则,把unicode字符集的数字转换成计算机能识别的编码
+    * utf-8标识的汉字,占用3个字节 
+    * 汉字转换成utf-8之后格式: 1110 XXXX | 10XX XXXX | 10XX XXXX
+    * **了解uhf-8是如何将unicode字符集进行转换的**

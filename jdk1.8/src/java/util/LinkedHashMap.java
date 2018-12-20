@@ -161,7 +161,7 @@ import java.io.IOException;
  * @since   1.4
  */
 public class LinkedHashMap<K,V>
-    extends HashMap<K,V>
+    extends HashMap<K,V>//继承HashMap
     implements Map<K,V>
 {
 
@@ -188,6 +188,7 @@ public class LinkedHashMap<K,V>
 
     /**
      * HashMap.Node subclass for normal LinkedHashMap entries.
+     * LinkedHashMap底层是双向链表
      */
     static class Entry<K,V> extends HashMap.Node<K,V> {
         Entry<K,V> before, after;
@@ -201,12 +202,12 @@ public class LinkedHashMap<K,V>
     /**
      * The head (eldest) of the doubly linked list.
      */
-    transient LinkedHashMap.Entry<K,V> head;
+    transient LinkedHashMap.Entry<K,V> head;//头节点
 
     /**
      * The tail (youngest) of the doubly linked list.
      */
-    transient LinkedHashMap.Entry<K,V> tail;
+    transient LinkedHashMap.Entry<K,V> tail;//尾节点
 
     /**
      * The iteration ordering method for this linked hash map: <tt>true</tt>
@@ -218,7 +219,7 @@ public class LinkedHashMap<K,V>
 
     // internal utilities
 
-    // link at the end of list
+    // link at the end of list,在最后添加节点p
     private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
         LinkedHashMap.Entry<K,V> last = tail;
         tail = p;
@@ -230,11 +231,11 @@ public class LinkedHashMap<K,V>
         }
     }
 
-    // apply src's links to dst
+    // apply src's links to dst,将src节点替换成dst节点
     private void transferLinks(LinkedHashMap.Entry<K,V> src,
                                LinkedHashMap.Entry<K,V> dst) {
-        LinkedHashMap.Entry<K,V> b = dst.before = src.before;
-        LinkedHashMap.Entry<K,V> a = dst.after = src.after;
+        LinkedHashMap.Entry<K,V> b = dst.before = src.before;// dst.before = src.before ; b = dst.before;
+        LinkedHashMap.Entry<K,V> a = dst.after = src.after;// dst.after = src.after ; a = dst.after
         if (b == null)
             head = dst;
         else
@@ -243,6 +244,7 @@ public class LinkedHashMap<K,V>
             tail = dst;
         else
             a.before = dst;
+        //替换完成后,src节点就不再被引用,下次GC进行回收
     }
 
     // overrides of HashMap hook methods

@@ -1,0 +1,44 @@
+Compiled from "IntegerDemo.java"
+public class IntegerTest.IntegerDemo {
+  public IntegerTest.IntegerDemo();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: bipush        10
+       2: invokestatic  #2                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       5: astore_1
+       6: bipush        10
+       8: invokestatic  #2                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      11: astore_2
+      12: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      15: aload_1
+      16: aload_2
+      17: if_acmpne     24
+      20: iconst_1
+      21: goto          25
+      24: iconst_0
+      25: invokevirtual #4                  // Method java/io/PrintStream.println:(Z)V
+      28: new           #5                  // class java/lang/Integer
+      31: dup
+      32: bipush        11
+      34: invokespecial #6                  // Method java/lang/Integer."<init>":(I)V
+      37: astore_3
+      38: new           #5                  // class java/lang/Integer
+      41: dup
+      42: bipush        11
+      44: invokespecial #6                  // Method java/lang/Integer."<init>":(I)V
+      47: astore        4
+      49: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      52: aload_3
+      53: aload         4
+      55: if_acmpne     62
+      58: iconst_1
+      59: goto          63
+      62: iconst_0
+      63: invokevirtual #4                  // Method java/io/PrintStream.println:(Z)V
+      66: return
+}

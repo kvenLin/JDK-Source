@@ -81,7 +81,7 @@ public class ThreadLocal<T> {
      * in the common case where consecutively constructed ThreadLocals
      * are used by the same threads, while remaining well-behaved in
      * less common cases.
-     * 计算当前ThreadLocal对象的HashCode
+     * 计算当前ThreadLocal对象的HashCode,final限制当前成员属性只有
      */
     private final int threadLocalHashCode = nextHashCode();
 
@@ -104,6 +104,8 @@ public class ThreadLocal<T> {
     /**
      * Returns the next hash code.
      * 获取下一个HashCode值,添加散列值得到下一个HashCode
+     * 创建一个ThreadLocal时,调用该方法为成员变量threadLocalHashCode进行赋值,
+     * 而threadLocalHashCode是final类型只有第一次实例化时的赋值是有效的
      */
     private static int nextHashCode() {
         return nextHashCode.getAndAdd(HASH_INCREMENT);
@@ -164,7 +166,7 @@ public class ThreadLocal<T> {
         //首先获取当前的线程
         Thread t = Thread.currentThread();
         //获取当前线程对应的ThreadLocalMap(线程内部属性threadLocals)
-        ThreadLocalMap map = getMap(t);//t.threadLocals
+        ThreadLocalMap map = getMap(t);//t.threadLocals,获取当前线程的TreadLocalMap,一个线程可能存在多个ThreadLocal
         if (map != null) {//不为空时,获取map中对应的当前ThreadLocal的Entry
             ThreadLocalMap.Entry e = map.getEntry(this);
             if (e != null) {//返回元素不为空时
@@ -218,7 +220,7 @@ public class ThreadLocal<T> {
             //若map存在,直接添加
             map.set(this, value);
         else
-            //若map不存在创建map
+            //若当前线程的ThreadLocalMap不存在创建map
             createMap(t, value);
     }
 

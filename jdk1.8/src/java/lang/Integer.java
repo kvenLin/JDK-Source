@@ -54,13 +54,13 @@ public final class Integer extends Number implements Comparable<Integer> {
      * A constant holding the minimum value an {@code int} can
      * have, -2<sup>31</sup>.
      */
-    @Native public static final int   MIN_VALUE = 0x80000000;
+    @Native public static final int   MIN_VALUE = 0x80000000;//最小值为:-2^31,一个符号位
 
     /**
      * A constant holding the maximum value an {@code int} can
      * have, 2<sup>31</sup>-1.
      */
-    @Native public static final int   MAX_VALUE = 0x7fffffff;
+    @Native public static final int   MAX_VALUE = 0x7fffffff;//最大值为:2^31 - 1,一个符号位
 
     /**
      * The {@code Class} instance representing the primitive type
@@ -779,10 +779,10 @@ public final class Integer extends Number implements Comparable<Integer> {
 
     private static class IntegerCache {
         static final int low = -128;
-        static final int high;
-        static final Integer cache[];
+        static final int high;//127
+        static final Integer cache[];//[-128 --- 127],创建一个包含256个数的Integer数组对象
 
-        static {
+        static {//自动执行
             // high value may be configured by property
             int h = 127;
             String integerCacheHighPropValue =
@@ -790,16 +790,16 @@ public final class Integer extends Number implements Comparable<Integer> {
             if (integerCacheHighPropValue != null) {
                 try {
                     int i = parseInt(integerCacheHighPropValue);
-                    i = Math.max(i, 127);
+                    i = Math.max(i, 127);//127
                     // Maximum array size is Integer.MAX_VALUE
-                    h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+                    h = Math.min(i, Integer.MAX_VALUE - (-low) -1);//i = 127
                 } catch( NumberFormatException nfe) {
                     // If the property cannot be parsed into an int, ignore it.
                 }
             }
-            high = h;
+            high = h;//127
 
-            cache = new Integer[(high - low) + 1];
+            cache = new Integer[(high - low) + 1];//256
             int j = low;
             for(int k = 0; k < cache.length; k++)
                 cache[k] = new Integer(j++);
@@ -826,9 +826,9 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @return an {@code Integer} instance representing {@code i}.
      * @since  1.5
      */
-    public static Integer valueOf(int i) {
-        if (i >= IntegerCache.low && i <= IntegerCache.high)
-            return IntegerCache.cache[i + (-IntegerCache.low)];
+    public static Integer valueOf(int i) {//有缓存机制
+        if (i >= IntegerCache.low && i <= IntegerCache.high)// -127 <= i <= 128
+            return IntegerCache.cache[i + (-IntegerCache.low)];//i + 128,这里i为从0开始的数,则索引下标应该从128开始
         return new Integer(i);
     }
 
