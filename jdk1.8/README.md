@@ -140,7 +140,8 @@ jdk源码学习
 ### 相关问题
 * 为什使用弱引用?
 > 当ThreadLocal = null后,还存存在Thread中的ThreadLocalMap中的Entry对添加的obj的引用,
-如果Entry不使用弱引用将只有等到整个线程运行完后才能进行GC回收,而这里的Entry所存储的obj我们已经不能从ThreadLocalMap中取出使用,
+如果Entry不使用弱引用将只有等到整个线程运行完后才能进行GC回收,
+而这里的Entry所存储的obj我们已经不能从ThreadLocalMap中取出使用,
 所以这里的Entry已经可以进行回收,只有使用弱引用才能被垃圾回收器回收.
 
 ## IO流
@@ -156,3 +157,11 @@ jdk源码学习
     * utf-8标识的汉字,占用3个字节 
     * 汉字转换成utf-8之后格式: 1110 XXXX | 10XX XXXX | 10XX XXXX
     * **了解uhf-8是如何将unicode字符集进行转换的**
+## 序列化
+* 序列化将对象的状态信息装换成可以存储或传输的形式的**过程**
+* 计算机中保存的所有数据都是二进制数据
+* 总结: 序列化就是把计算机中的各种各样的格式(文本,图片,音频,视频)变成数字的过程
+* 变成数字后,用IO流读写
+    * 字节流
+* 反序列化: 就是把二进制数据还原成各种各样的数据格式的过程呢个
+* [测试demo](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/SerializationTest/)

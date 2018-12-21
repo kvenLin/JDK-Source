@@ -124,6 +124,9 @@ package java.io;
  * This readResolve method follows the same invocation rules and
  * accessibility rules as writeReplace.<p>
  *
+ * 序列化运行会关联一个version number即serialVersionUID,一个可序列化的类可以定义一个自己的
+ * serialVersionUID,通过区定义一个field name(即成员属性)为serialVersionUID
+ *
  * The serialization runtime associates with each serializable class a version
  * number, called a serialVersionUID, which is used during deserialization to
  * verify that the sender and receiver of a serialized object have loaded
@@ -135,9 +138,13 @@ package java.io;
  * declaring a field named <code>"serialVersionUID"</code> that must be static,
  * final, and of type <code>long</code>:
  *
+ * 示例:
+ *
  * <PRE>
  * ANY-ACCESS-MODIFIER static final long serialVersionUID = 42L;
  * </PRE>
+ *
+ * 如果不定义自己的serialVersionUID,则运行的时候会计算一个默认的serialVersionUID来使用
  *
  * If a serializable class does not explicitly declare a serialVersionUID, then
  * the serialization runtime will calculate a default serialVersionUID value
