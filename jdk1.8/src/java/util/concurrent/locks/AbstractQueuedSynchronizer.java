@@ -289,6 +289,12 @@ import sun.misc.Unsafe;
 public abstract class AbstractQueuedSynchronizer
     extends AbstractOwnableSynchronizer
     implements java.io.Serializable {
+    /**
+     * 简介:
+     * 内部存在一个获取锁的等待队列
+     * 互斥锁状态下的int状态位(0当前没有线程持有该锁,n存在某线程重入锁n次)
+     * 该状态位也可以用于其它诸如共享锁,信号量等功能
+     */
 
     private static final long serialVersionUID = 7373984972572414691L;
 
@@ -584,6 +590,18 @@ public abstract class AbstractQueuedSynchronizer
      * @param node the node to insert
      * @return node's predecessor
      */
+    /**
+     * 将节点 node 加入队列
+     * 这里有个注意点
+     * 情况:
+     *      1. 首先 queue是空的
+     *      2. 初始化一个 dummy 节点
+     *      3. 这时再在tail后面添加节点(这一步可能失败, 可能发生竞争被其他的线程抢占)
+     *  这里为什么要加入一个 dummy 节点呢?
+     *      这里的 Sync Queue 是CLH lock的一个变种, 线程节点 node 能否获取lock的判断通过其前继节点
+     *      而且这里在当前节点想获取lock时通常给前继节点 打上 signal 的标识(表示当前继节点释放lock需要通知我来获取lock)
+     *      若这里不清楚的同学, 请先看看 CLH lock的资料 (这是理解 AQS 的基础)
+     */
     private Node enq(final Node node) {
         for (;;) {
             Node t = tail;
@@ -605,19 +623,20 @@ public abstract class AbstractQueuedSynchronizer
      *
      * @param mode Node.EXCLUSIVE for exclusive, Node.SHARED for shared
      * @return the new node
+     * 将当前线程封装成Node加入到Sync Queue里面,等待获取signal信号
      */
     private Node addWaiter(Node mode) {
-        Node node = new Node(Thread.currentThread(), mode);
+        Node node = new Node(Thread.currentThread(), mode);//将当前线程封装成一个Node
         // Try the fast path of enq; backup to full enq on failure
         Node pred = tail;
-        if (pred != null) {
-            node.prev = pred;
-            if (compareAndSetTail(pred, node)) {
-                pred.next = node;
+        if (pred != null) { // pred != null -> 队列中已经有节点, 直接 CAS 到尾节点
+            node.prev = pred; // 先设置 Node.pre = pred (PS: 则当一个 node在Sync Queue里面时  node.prev 一定 != null(除 dummy node), 但是 node.prev != null 不能说明其在 Sync Queue 里面, 因为现在的CAS可能失败 )
+            if (compareAndSetTail(pred, node)) { //  CAS node 到 tail
+                pred.next = node;  //CAS 成功, 将 pred.next = node (PS: 说明 node.next != null -> 则 node 一定在 Sync Queue, 但若 node 在Sync Queue 里面不一定 node.next != null)
                 return node;
             }
         }
-        enq(node);
+        enq(node); // 队列为空, 调用 enq 入队列
         return node;
     }
 
@@ -857,6 +876,7 @@ public abstract class AbstractQueuedSynchronizer
      * @param node the node
      * @param arg the acquire argument
      * @return {@code true} if interrupted while waiting
+     * 不支持中断的获取锁
      */
     final boolean acquireQueued(final Node node, int arg) {
         boolean failed = true;
@@ -1198,6 +1218,14 @@ public abstract class AbstractQueuedSynchronizer
      *        {@link #tryAcquire} but is otherwise uninterpreted and
      *        can represent anything you like.
      */
+    /** acquire 是用于获取锁的最常用的模式
+     * 步骤
+     *      1. 调用 tryAcquire 尝试性的获取锁(一般都是由子类实现), 成功的话直接返回
+     *      2. tryAcquire 调用获取失败, 将当前的线程封装成 Node 加入到 Sync Queue 里面(调用addWaiter), 等待获取 signal 信号
+     *      3. 调用 acquireQueued 进行自旋的方式获取锁(有可能会 repeatedly blocking and unblocking)
+     *      4. 根据acquireQueued的返回值判断在获取lock的过程中是否被中断, 若被中断, 则自己再中断一下(selfInterrupt)
+     *
+     */
     public final void acquire(int arg) {
         if (!tryAcquire(arg) &&
             acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
@@ -1220,10 +1248,10 @@ public abstract class AbstractQueuedSynchronizer
      */
     public final void acquireInterruptibly(int arg)
             throws InterruptedException {
-        if (Thread.interrupted())
+        if (Thread.interrupted())// 判断线程是否被终止
             throw new InterruptedException();
-        if (!tryAcquire(arg))
-            doAcquireInterruptibly(arg);
+        if (!tryAcquire(arg))// 尝试性的获取锁
+            doAcquireInterruptibly(arg);//获取锁不成功,直接加入到Sync
     }
 
     /**
@@ -1262,10 +1290,10 @@ public abstract class AbstractQueuedSynchronizer
      * @return the value returned from {@link #tryRelease}
      */
     public final boolean release(int arg) {
-        if (tryRelease(arg)) {
+        if (tryRelease(arg)) { // 调用子类, 若完全释放好, 则返回true(这里有lock重复获取)
             Node h = head;
-            if (h != null && h.waitStatus != 0)
-                unparkSuccessor(h);
+            if (h != null && h.waitStatus != 0)// h.waitStatus !=0 其实就是 h.waitStatus < 0 后继节点需要唤醒
+                unparkSuccessor(h);// 唤醒后继节点
             return true;
         }
         return false;

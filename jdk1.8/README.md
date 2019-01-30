@@ -107,7 +107,7 @@ jdk源码学习
 * 继承HashMap
 * 底层是双向链表
 ## ThreadLocal
-* 一般叫做线程本地本地变量
+* 一般叫做线程本地变量
 * 实际使用ThreadLocalMap进行保存
 * 初始的ThreadLocalMap中的table容量为16
 * table扩容临界值为当前容量的2/3,只有满足当前条件才会进行扩容
@@ -144,6 +144,40 @@ jdk源码学习
 而这里的Entry所存储的obj我们已经不能从ThreadLocalMap中取出使用,
 所以这里的Entry已经可以进行回收,只有使用弱引用才能被垃圾回收器回收.
 
+## synchronized 和 ReentrantLock
+### ReentrantLock
+* 继承接口Lock
+* 成员变量 Sync sync
+* 内部抽象类Sync继承AbstractQueuedSynchronizer
+* 存在两个实现类NonfairSync和FairSync继承Sync
+* lock()方法:
+    * 通过回调内部的Sync的lock实现方法,即NonfairSync或FairSync的lock
+        * 公平锁(Fair):
+        >加锁前检查是否有排队等待的线程，优先排队等待的线程，先来先得 
+        * 非公平锁(Nonfair):
+        > 加锁时不考虑排队等待问题，直接尝试获取锁，获取不到自动到队尾等待
+    * 默认使用的是非公平锁(Nonfair):
+    > 在获取时先cas改变一下 AQS 的state值, 改变成功就获取, 不然就加入到  AQS 的 Sync Queue 里面
+    
+### synchronized和ReentrantLock异同
+* 相同:
+    * 都实现了多线程同步和内存可见性语义
+    * 都是可重入锁
+* 不同点:
+    * 实现机制不同:
+        * synchronized通过java对象头锁标记和Monitor对象实现 
+        * reentrantlock通过CAS、AQS（AbstractQueuedSynchronizer）和locksupport（用于阻塞和解除阻塞）实现 
+        * synchronized依赖jvm内存模型保证包含共享变量的多线程内存可见性 
+        * reentrantlock通过ASQ的volatile state保证包含共享变量的多线程内存可见性
+    * 使用方式不同:
+        * ynchronized可以修饰实例方法（锁住实例对象）、静态方法（锁住类对象）、代码块（显示指定锁对象）
+        * reentrantlock显示调用trylock()/lock()方法，需要在finally块中释放锁
+    * 功能丰富程度不同:
+        * reentrantlock提供有限时间等候锁（设置过期时间）、可中断锁（lockInterruptibly）、condition（提供await、signal等方法）等丰富语义 
+        * reentrantlock提供公平锁和非公平锁实现
+        * synchronized不可设置等待时间、不可被中断（interrupted）
+## 
+
 ## IO流
 * 字节流
 * 字符流:用来操作字符的
@@ -156,12 +190,12 @@ jdk源码学习
     * utf-8是用一个运算规则,把unicode字符集的数字转换成计算机能识别的编码
     * utf-8标识的汉字,占用3个字节 
     * 汉字转换成utf-8之后格式: 1110 XXXX | 10XX XXXX | 10XX XXXX
-    * **了解uhf-8是如何将unicode字符集进行转换的**
+    * **了解utf-8是如何将unicode字符集进行转换的**
 ## 序列化
 * 序列化将对象的状态信息装换成可以存储或传输的形式的**过程**
 * 计算机中保存的所有数据都是二进制数据
 * 总结: 序列化就是把计算机中的各种各样的格式(文本,图片,音频,视频)变成数字的过程
 * 变成数字后,用IO流读写
     * 字节流
-* 反序列化: 就是把二进制数据还原成各种各样的数据格式的过程呢个
+* 反序列化: 就是把二进制数据还原成各种各样的数据格式的过程
 * [测试demo](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/SerializationTest/)
