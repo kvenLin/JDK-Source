@@ -16,7 +16,21 @@ jdk源码学习
     * [相关问题](#相关问题)
 * [IO流](#IO流)
 
-    
+## 如何进行源码的阅读?
+### 对于源码阅读顺序
+* 建议先从常用类进行入手进行解读,初次尝试源码阅读可以结合别人的博客进行阅读
+* 阅读的方法可以先从**方法**和**成员变量**的作用进行理解和解读
+* 然后进行方法内部的具体实现进行解读
+* 最后结合子类和继承的父类或接口进行解读
+### 阅读源码的方法
+这里分享一下自己阅读的经验,我使用的是intellij
+* 学会使用bookmarks,用于标记阅读源码的位置便于下一次继续进行阅读
+    * bookmarks标记: ctrl + 单击鼠标左键
+    ![bookmark标记](http://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_002.png)
+    * 查看标记内容: Shift + F11
+    ![查看标记内容](http://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_003.png)
+    * [参考博客](https://blog.csdn.net/qq_36376059/article/details/80277767)
+* **学会进行写注释**,可以结合博客和自己的理解然后进行分析写注释
 ## String
 * String使用char[]保存字符串的值,而且还是静态常量
 * 当相同的字符串被多次创建(使用双引号显式声明)时,**字符串常量对象会被创建在常量池中**,且只会有一个对象

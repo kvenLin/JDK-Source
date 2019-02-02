@@ -441,7 +441,9 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
             while (count.get() == 0) {
                 notEmpty.await();
             }
+            //出队操作
             x = dequeue();
+            //数量-1
             c = count.getAndDecrement();
             if (c > 1)
                 notEmpty.signal();
