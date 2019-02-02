@@ -158,6 +158,14 @@ import java.util.Arrays;
         append(seq);
     }
 
+    /**
+     * =========================================
+     * 注意: StringBuffer 是线程安全类,因为所有的方法
+     * 都进行了加关键字synchronized,保证了每次只能有一
+     * 个线程进行调用.
+     * ==========================================
+     */
+
     @Override
     public synchronized int length() {
         return count;

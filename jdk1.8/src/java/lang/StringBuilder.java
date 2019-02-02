@@ -126,6 +126,12 @@ public final class StringBuilder
         append(seq);
     }
 
+    /**
+     * ========================================
+     * 注意: StringBuilder是线程不安全的类,当需要保证
+     * 字符串工具类的方法调用的安全时建议使用StringBuffer.
+     * =========================================
+     */
     @Override
     public StringBuilder append(Object obj) {
         return append(String.valueOf(obj));
