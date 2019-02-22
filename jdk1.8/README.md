@@ -8,16 +8,22 @@ jdk源码学习
     * [常考面试题](#常考面试题)
 * [整型缓存](#整型缓存)
 * [重载](#重载)
-* [ArrayList](#arraylist)
-* [HashMap](#hashmap)
+* [ArrayList](#arraylist(非线程安全))
+* [Vector](#vector(线程安全))
+* [LinkedList](#linkedlist(非线程安全))
+* [HashMap](#hashmap(非线程安全))
     * [put和get方法分析](#put和get方法)
     * [HashMap引出的求余%和与运算&转换问题](#HashMap引出的求余%和与运算&转换问题)
-* [LinkedHashMap](#linkedhashmap)
+* [Hashtable](#hashtable(线程安全))
+* [LinkedHashMap](#linkedhashmap(非线程安全))
+* [HashSet](#hashset(非线程安全))
+* [ConcurrentHashMap](#concurrenthashmap(线程安全))
 * [ThreadLocal](#ThreadLocal)
     * [主要方法](#主要方法)
     * [关于为什么ThreadLocal中的Entry申明为弱引用?](#关于为什么ThreadLocal中的Entry申明为弱引用?)
     * [相关问题](#相关问题)
 * [IO流](#IO流)
+* [序列化](#序列化)
 
 ## 如何进行源码的阅读?
 ### 对于源码阅读顺序
@@ -75,33 +81,43 @@ jdk源码学习
     那么调用的就是子类中重写的方法,因为运行时类型一定是子类的类型,
     引用子类的那个类型可以是父类类型
     
-## ArrayList
+## ArrayList(非线程安全)
+* 实现了 RandomAccess 接口,标识着这个类可以快速随机访问
 * 构造函数
     * 无参: 底层默认创建一个空数组,在进行第一次添加操作时进行扩容为默认的**容量10**
     * 传入int n: 创建一个容h量为n的数组
     * 传入集合: 使用Arrays.copyOf()进行遍历赋值到当前ArrayList中
-* 底层数组设定的最大长度为**MAX_ARRAY_SIZE** = Integer.MAX_VALUE - 8
+* 底层数组设定的最大长度为**MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8**
+* 扩容条件: **插入元素时,当需要元素空间大于数组现有容量时进行扩容**
 * 只有在minCapacity > MAX_ARRAY_SIZE时会扩容到Integer.MAX_VALUE
 * 核心扩容方法 grow(int minCapacity):
     * 传入minCapacity,最小所需容量的空间
     * 实现: `newCapacity = oldCapacity + (oldCapacity >> 1);`
-    * 使用的移位操作,扩容为之前的1.5倍容量
+    * 使用的移位操作,**扩容为之前的1.5倍容量**
 * copyOf()和arraycopy()
     * toString方法底层使用Arrays.copyOf()
     * add()或remove()使用的是System.arraycopy()
     * 实质:copyOf()底层还是由arraycopy()实现
     * [copyOf()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArraycopyTest.java)
     * [arraycopy()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
-## HashMap
+## Vector(线程安全)
+* 出构造发方法以外的所有方法都是synchronized同步的
+* 区别于ArrayList： ArrayList不是同步的,所以在不需要保证线程安全时时建议使用ArrayList
+
+## LinkedList(非线程安全)
+* 初始大小万为0
+* 实现了 List接口,Deque接口的双端链表
+
+## HashMap(非线程安全)
 
 ![结构视图](https://camo.githubusercontent.com/eec1c575aa5ff57906dd9c9130ec7a82e212c96a/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f332f32302f313632343064626363333033643837323f773d33343826683d34323726663d706e6726733d3130393931)
 
 * 默认初始table使用的是Map.Entry<K,V>[]实现**链表结构**进行存储
-* 转换临界值:TREEIFY_THRESHOLD = 8;**链表长度 >= 8时进行转换**,转换成红黑树结构
-* table默认初始容量为16;DEFAULT_INITIAL_CAPACITY = 1 << 4
-* table最大容量为2的30次方;MAXIMUM_CAPACITY = 1 << 30
-* table默认的负载因子DEFAULT_LOAD_FACTOR = 0.75,只有元素总量达到总容量的75%才会进行扩容
-* 扩容每次扩容为原有容量的2倍,**保证了容量n为2的x次方**
+* 转换临界值:TREEIFY_THRESHOLD = 8;**链表长度 >= 8时进行转换**,转换成**红黑树**结构
+* table**默认初始容量为16**;DEFAULT_INITIAL_CAPACITY = 1 << 4
+* table**最大容量为2的30次方**;MAXIMUM_CAPACITY = 1 << 30
+* table默认的负载因子DEFAULT_LOAD_FACTOR = 0.75,**只有元素总量达到总容量的75%才会进行扩容**
+* 扩容**每次扩容为原有容量的2倍,保证了容量n为2的x次方**
 ### put和get方法
 * put(key,value)方法:
     * 如果定位到的数组位置没有元素 就直接插入.
@@ -111,7 +127,8 @@ jdk源码学习
     * 如果是就调用e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value)将元素添加进入
     * 如果不是就遍历链表插入。
 * get(key)方法:
-    * 根据key的hashCode计算对应的hash(int类型)
+    * **根据key的hashCode计算对应的hash**(int类型)
+    * **然后通过(n - 1) & hash 得到元素存放的位置**
     * 调用getNode(hash,key):
         * 先根据hash的模运算得到索引再比较key
         * 满足(k = e.key) == key || (key != null && key.equals(k)),即当前节点key内存地址相等且key对象内容相等
@@ -121,9 +138,26 @@ jdk源码学习
 * 当n = 2的x次幂时,满足转换条件,**(n - 1) & hash 等价于 hash % n**
 * [参考博客](https://www.cnblogs.com/ysocean/p/9054804.html)
 
-## LinkedHashMap
+## Hashtable(线程安全)
+* 线程安全,大多数方法采用了synchronized进行同步处理
+* 设置默认的**初始容量为11,负载因子为0.75**
+* ![图示](https://camo.githubusercontent.com/b8e66016373bb109e923205857aeee9689baac9e/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f35303635363638312e6a7067)
+
+## LinkedHashMap(非线程安全)
 * 继承HashMap
 * 底层是双向链表
+
+## HashSet(非线程安全)
+* 底层使用的是HashMap
+
+## ConcurrentHashMap(线程安全)
+* 底层使用的 分段数组 + 链表/红黑二叉树
+* 1.7时采用**分段锁(Segment)将整个数组分隔为多段数组**
+* 1.7时结构: ![1.7时](https://camo.githubusercontent.com/443af05b6be6ed09e50c78a1dca39bf75acb106d/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f33333132303438382e6a7067)
+* 1.8时采用**synchronized 和 CAS来操作**
+    * synchronized只锁定当前链表或红黑二叉树的首节点,这样只要hash不冲突,就不会产生并发空,效率又提升N倍。
+* 1.8时结构: ![1.8时](https://camo.githubusercontent.com/2d779bf515db75b5bf364c4f23c31268330a865e/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f39373733393232302e6a7067)
+
 ## ThreadLocal
 * 一般叫做线程本地变量
 * 实际使用ThreadLocalMap进行保存
@@ -194,7 +228,6 @@ jdk源码学习
         * reentrantlock提供有限时间等候锁（设置过期时间）、可中断锁（lockInterruptibly）、condition（提供await、signal等方法）等丰富语义 
         * reentrantlock提供公平锁和非公平锁实现
         * synchronized不可设置等待时间、不可被中断（interrupted）
-## 
 
 ## IO流
 * 字节流

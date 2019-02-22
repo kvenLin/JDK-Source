@@ -46,6 +46,14 @@ package java.lang;
  * @jls 11.2 Compile-Time Checking of Exceptions
  * @since   JDK1.0
  */
+
+/**
+ * Error(错误):
+ * ###是程序无法处理的错误###，表示运行应用程序中较严重问题。
+ * 大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。
+ * 例如，Java虚拟机运行错误（Virtual MachineError），当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。
+ * 这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。
+ */
 public class Error extends Throwable {
     static final long serialVersionUID = 4980196508277280342L;
 

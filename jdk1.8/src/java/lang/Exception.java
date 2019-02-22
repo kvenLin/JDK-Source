@@ -42,6 +42,19 @@ package java.lang;
  * @jls 11.2 Compile-Time Checking of Exceptions
  * @since   JDK1.0
  */
+
+/**
+ * Exception（异常）:
+ * ###是程序本身可以处理的异常。###
+ * Exception 类有一个重要的子类 RuntimeException。
+ * RuntimeException 异常由Java虚拟机抛出。
+ * NullPointerException（要访问的变量没有引用任何对象时，抛出该异常）、ArithmeticException（算术运算异常，一个整数除以0时，抛出该异常）
+ * 和 ArrayIndexOutOfBoundsException （下标越界异常）。
+ *
+ * 注意:
+ * Exception(异常) 和 Error(错误) 的区别:
+ * 异常能被程序本身可以处理，错误是无法处理。
+ */
 public class Exception extends Throwable {
     static final long serialVersionUID = -3387516993124229948L;
 

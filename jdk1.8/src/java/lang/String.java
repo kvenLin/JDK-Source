@@ -108,10 +108,20 @@ import java.util.regex.PatternSyntaxException;
  * @since   JDK1.0
  */
 
+/**
+ * String 使用了final修饰:
+ * 对于final修饰的类,所有成员方法都会被隐式的指定为final方法
+ *
+ * 用final方法的原因有两个:
+ * 第一个原因是把方法锁定，以防任何继承类修改它的含义；
+ * 第二个原因是效率。
+ *
+ */
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
     /** The value is used for character storage. */
-    private final char value[];//底层使用字符数组存储字符串,final修饰的value指向一个地址之后就无法进行修改
+    //底层使用字符数组存储字符串,final修饰的value指向一个地址之后就无法进行修改
+    private final char value[];
 
     /** Cache the hash code for the string */
     private int hash; // Default to 0

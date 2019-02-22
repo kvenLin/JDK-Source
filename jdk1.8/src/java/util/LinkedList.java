@@ -84,7 +84,7 @@ public class LinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable
 {
-    transient int size = 0;//初始大小万为0
+    transient int size = 0;//初始大小为0
 
     /**
      * Pointer to first node.

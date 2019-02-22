@@ -104,6 +104,8 @@ import java.util.function.UnaryOperator;
  */
 
 public class ArrayList<E> extends AbstractList<E>
+    //RandomAccess 接口中什么都没有定义， 所以这里主要起到了标识的作用， 标识实现这个接口的类具有随机访问功能。
+    //实现了Cloneable 接口，即覆盖了函数 clone()，能被克隆
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
 {
     private static final long serialVersionUID = 8683452581122892189L;
@@ -243,6 +245,7 @@ public class ArrayList<E> extends AbstractList<E>
         modCount++;
 
         // overflow-conscious code
+        //当最小所需空间大于数组长度时进行扩容
         if (minCapacity - elementData.length > 0)
             //调用grow方法进行扩容，调用此方法代表已经开始扩容
             grow(minCapacity);
@@ -479,6 +482,7 @@ public class ArrayList<E> extends AbstractList<E>
     public boolean add(E e) {
         //添加元素之前，先调用ensureCapacityInternal方法
         ensureCapacityInternal(size + 1);  // Increments modCount!!
+        //默认添加元素的位置在数组的末尾处
         elementData[size++] = e;
         return true;
     }

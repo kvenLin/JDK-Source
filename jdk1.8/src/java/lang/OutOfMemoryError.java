@@ -38,6 +38,10 @@ package java.lang;
  * @author  unascribed
  * @since   JDK1.0
  */
+
+/**
+ * JVM运行时错误,内存溢出错误
+ */
 public class OutOfMemoryError extends VirtualMachineError {
     private static final long serialVersionUID = 8228564086184010517L;
 

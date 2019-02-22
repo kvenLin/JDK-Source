@@ -126,7 +126,8 @@ import java.util.function.BiFunction;
  * @see     HashMap
  * @see     TreeMap
  * @since JDK1.0
- * 线程安全
+ * 线程安全,大多数方法采用了synchronized进行同步处理
+ * 注意: 该类基本上已经被淘汰了,若考虑线程安全的处理使用{@link java.util.concurrent.ConcurrentHashMap}
  */
 public class Hashtable<K,V>
     extends Dictionary<K,V>
