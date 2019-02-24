@@ -196,6 +196,15 @@ jdk源码学习
 而这里的Entry所存储的obj我们已经不能从ThreadLocalMap中取出使用,
 所以这里的Entry已经可以进行回收,只有使用弱引用才能被垃圾回收器回收.
 
+##AQS简析
+### 主要流程
+* 调用自定义同步器的tryAcquire()尝试直接去获取资源，如果成功则直接返回；
+* 没成功，则addWaiter()将该线程加入等待队列的尾部，并标记为独占模式；
+* acquireQueued()使线程在等待队列中休息，有机会时（轮到自己，会被unpark()）会去尝试获取资源。获取到资源后才返回。如果在整个等待过程中被中断过，则返回true，否则返回false。
+* 如果线程在等待过程中被中断过，它是不响应的。只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。
+
+![流程图示](https://images2015.cnblogs.com/blog/721070/201511/721070-20151102145743461-623794326.png)
+
 ## synchronized 和 ReentrantLock
 ### ReentrantLock
 * 继承接口Lock
@@ -222,7 +231,7 @@ jdk源码学习
         * synchronized依赖jvm内存模型保证包含共享变量的多线程内存可见性 
         * reentrantlock通过ASQ的volatile state保证包含共享变量的多线程内存可见性
     * 使用方式不同:
-        * ynchronized可以修饰实例方法（锁住实例对象）、静态方法（锁住类对象）、代码块（显示指定锁对象）
+        * synchronized可以修饰实例方法（锁住实例对象）、静态方法（锁住类对象）、代码块（显示指定锁对象）
         * reentrantlock显示调用trylock()/lock()方法，需要在finally块中释放锁
     * 功能丰富程度不同:
         * reentrantlock提供有限时间等候锁（设置过期时间）、可中断锁（lockInterruptibly）、condition（提供await、signal等方法）等丰富语义 

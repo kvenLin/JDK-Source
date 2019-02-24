@@ -366,6 +366,14 @@ public class ReentrantReadWriteLock
          * condition wait and re-established in tryAcquire.
          */
 
+        /**
+         * 独占方式。
+         * 尝试释放资源，
+         * 成功则返回true，
+         * 失败则返回false。
+         * @param releases
+         * @return
+         */
         protected final boolean tryRelease(int releases) {
             if (!isHeldExclusively())
                 throw new IllegalMonitorStateException();
@@ -377,6 +385,14 @@ public class ReentrantReadWriteLock
             return free;
         }
 
+        /**
+         * 独占方式。
+         * 尝试获取资源，
+         * 成功则返回true，
+         * 失败则返回false。
+         * @param acquires
+         * @return
+         */
         protected final boolean tryAcquire(int acquires) {
             /*
              * Walkthrough:
@@ -409,6 +425,14 @@ public class ReentrantReadWriteLock
             return true;
         }
 
+        /**
+         * 共享方式。
+         * 尝试释放资源，
+         * 如果释放后允许唤醒后续等待结点返回true，
+         * 否则返回false。
+         * @param unused
+         * @return
+         */
         protected final boolean tryReleaseShared(int unused) {
             Thread current = Thread.currentThread();
             if (firstReader == current) {
@@ -445,6 +469,12 @@ public class ReentrantReadWriteLock
                 "attempt to unlock read lock, not locked by current thread");
         }
 
+        /**
+         * 共享方式。
+         * 尝试获取资源。负数表示失败；
+         * 0表示成功，但没有剩余可用资源；
+         * 正数表示成功，且有剩余资源。
+         */
         protected final int tryAcquireShared(int unused) {
             /*
              * Walkthrough:
