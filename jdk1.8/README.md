@@ -22,6 +22,11 @@ jdk源码学习
     * [主要方法](#主要方法)
     * [关于为什么ThreadLocal中的Entry申明为弱引用?](#关于为什么ThreadLocal中的Entry申明为弱引用?)
     * [相关问题](#相关问题)
+* [AQS简析](#aqs简析)
+    * [主要流程](#主要流程)
+* [synchronized 和 ReentrantLock](#synchronized-和-reentrantlock)
+    * [ReentrantLock](#reentrantlock)
+    * [synchronized和ReentrantLock异同](#synchronized和reentrantlock异同)
 * [IO流](#IO流)
 * [序列化](#序列化)
 
