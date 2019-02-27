@@ -1,4 +1,4 @@
-package ThreadLocal;
+package Thread.ThreadLocal;
 
 /**
  * @Author: clf

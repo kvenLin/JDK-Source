@@ -18,7 +18,7 @@ jdk源码学习
 * [LinkedHashMap](#linkedhashmap(非线程安全))
 * [HashSet](#hashset(非线程安全))
 * [ConcurrentHashMap](#concurrenthashmap(线程安全))
-* [ThreadLocal](#ThreadLocal)
+* [Thread.ThreadLocal](#Thread.ThreadLocal)
     * [主要方法](#主要方法)
     * [关于为什么ThreadLocal中的Entry申明为弱引用?](#关于为什么ThreadLocal中的Entry申明为弱引用?)
     * [相关问题](#相关问题)
@@ -163,7 +163,7 @@ jdk源码学习
     * synchronized只锁定当前链表或红黑二叉树的首节点,这样只要hash不冲突,就不会产生并发空,效率又提升N倍。
 * 1.8时结构: ![1.8时](https://camo.githubusercontent.com/2d779bf515db75b5bf364c4f23c31268330a865e/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f39373733393232302e6a7067)
 
-## ThreadLocal
+## Thread.ThreadLocal
 * 一般叫做线程本地变量
 * 实际使用ThreadLocalMap进行保存
 * 初始的ThreadLocalMap中的table容量为16
@@ -191,7 +191,7 @@ jdk源码学习
     * 存在则**传入this**,进行移除对应的键值对
 * protected T initialValue()
     * 默认初始的ThreadLocal返回的value为null,一般会对该方法进行重写
-* [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ThreadLocal/ThreadLocalDemo.java)
+* [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/Thread.ThreadLocal/ThreadLocalDemo.java)
 ### 关于为什么ThreadLocal中的Entry申明为弱引用?
 [参考博客](https://www.cnblogs.com/waterystone/p/6612202.html)
 ### 相关问题
@@ -202,6 +202,7 @@ jdk源码学习
 所以这里的Entry已经可以进行回收,只有使用弱引用才能被垃圾回收器回收.
 
 ##AQS简析
+[参考博客](http://www.cnblogs.com/waterystone/p/4920797.html)
 ### 主要流程
 * 调用自定义同步器的tryAcquire()尝试直接去获取资源，如果成功则直接返回；
 * 没成功，则addWaiter()将该线程加入等待队列的尾部，并标记为独占模式；
@@ -232,15 +233,15 @@ jdk源码学习
 * 不同点:
     * 实现机制不同:
         * synchronized通过java对象头锁标记和Monitor对象实现 
-        * reentrantlock通过CAS、AQS（AbstractQueuedSynchronizer）和locksupport（用于阻塞和解除阻塞）实现 
+        * ReentrantLock通过CAS、AQS（AbstractQueuedSynchronizer）和locksupport（用于阻塞和解除阻塞）实现 
         * synchronized依赖jvm内存模型保证包含共享变量的多线程内存可见性 
-        * reentrantlock通过ASQ的volatile state保证包含共享变量的多线程内存可见性
+        * ReentrantLock通过ASQ的volatile state保证包含共享变量的多线程内存可见性
     * 使用方式不同:
         * synchronized可以修饰实例方法（锁住实例对象）、静态方法（锁住类对象）、代码块（显示指定锁对象）
-        * reentrantlock显示调用trylock()/lock()方法，需要在finally块中释放锁
+        * ReentrantLock显示调用trylock()/lock()方法，需要在finally块中释放锁
     * 功能丰富程度不同:
-        * reentrantlock提供有限时间等候锁（设置过期时间）、可中断锁（lockInterruptibly）、condition（提供await、signal等方法）等丰富语义 
-        * reentrantlock提供公平锁和非公平锁实现
+        * ReentrantLock提供有限时间等候锁（设置过期时间）、可中断锁（lockInterruptibly）、condition（提供await、signal等方法）等丰富语义 
+        * ReentrantLock提供公平锁和非公平锁实现
         * synchronized不可设置等待时间、不可被中断（interrupted）
 
 ## IO流
