@@ -741,6 +741,7 @@ class Thread implements Runnable {
      */
     @Override
     public void run() {
+        //当target不为空时首先调用接口的run方法
         if (target != null) {
             target.run();
         }

@@ -399,6 +399,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * (We also tolerate length zero in some operations to allow
      * bootstrapping mechanics that are currently not needed.)
      */
+    //将所有链表的第一个节点或红黑树的root节点存入table中
     transient Node<K,V>[] table;
 
     /**

@@ -114,12 +114,19 @@ package java.util;
  * @see     Hashtable
  * @since   1.4
  */
-
+//LinkedHashSet = HashSet + LinkedHashMap， 及继承了HashSet，底层基于LinkedHashMap实现
 public class LinkedHashSet<E>
     extends HashSet<E>
     implements Set<E>, Cloneable, java.io.Serializable {
 
     private static final long serialVersionUID = -2851667679971038690L;
+    /**
+     * 该类只提供了四个构造方法，都调用了父类HashSet的构造方法指定方法指定底层使用LinkedHashMap
+     *
+     * HashSet(int initialCapacity, float loadFactor, boolean dummy) {//map使用链表实现
+     *         map = new LinkedHashMap<>(initialCapacity, loadFactor);
+     *     }
+     */
 
     /**
      * Constructs a new, empty linked hash set with the specified initial

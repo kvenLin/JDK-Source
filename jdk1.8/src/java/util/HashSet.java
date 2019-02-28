@@ -158,6 +158,7 @@ public class HashSet<E>
      * @throws     IllegalArgumentException if the initial capacity is less
      *             than zero, or if the load factor is nonpositive
      */
+    //这个构造方法是提供给LinkedHashSet使用的，通过构造方法判断是否使用LinkedHashMap来实现
     HashSet(int initialCapacity, float loadFactor, boolean dummy) {//map使用链表实现
         map = new LinkedHashMap<>(initialCapacity, loadFactor);
     }

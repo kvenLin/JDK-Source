@@ -4587,6 +4587,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * of invoking {@code charValue()}.
      *
      * @return a hash code value for this {@code Character}
+     * 重写了hashCode保证两个不同对象只要值相等则其hashCode必定相等
      */
     @Override
     public int hashCode() {

@@ -741,12 +741,22 @@ public abstract class AbstractQueuedSynchronizer
          * unparkSuccessor, we need to know if CAS to reset status
          * fails, if so rechecking.
          */
+        /**
+         * 这里采用了自旋的方式获取锁
+         *
+         * 原理：
+         * 如果持有锁的线程能在很短时间内释放锁资源,那么那些等待竞争锁
+         * 的线程就不需要做内核态和用户态之间的切换进入阻塞挂起状态,它们只需要等一等(自旋),
+         * 等持有锁的线程释放锁后即可立即获取锁,这样就避免用户线程和内核的切换的消耗。
+         */
         for (;;) {
             Node h = head;
             if (h != null && h != tail) {
                 int ws = h.waitStatus;
                 if (ws == Node.SIGNAL) {
+                    //尝试获取锁
                     if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                        //若获取不成功则跳出进行下一次尝试
                         continue;            // loop to recheck cases
                     unparkSuccessor(h);
                 }

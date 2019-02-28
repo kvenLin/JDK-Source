@@ -793,7 +793,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * creation, or 0 for default. After initialization, holds the
      * next element count value upon which to resize the table.
      */
-    private transient volatile int sizeCtl;//扩容条件size * 0.75,默认12,volatile保证了每次读取的数据始终是最新的数据
+    //控制Segment数组大小为sizeCtl，一旦指定就无法再进行扩容操作
+    private transient volatile int sizeCtl;
 
     /**
      * The next table index (plus one) to split while resizing.
@@ -820,6 +821,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * Creates a new, empty map with the default initial table size (16).
+     *
+     * 创建时不对成员变量进行初始化操作，在调用put()、get()方法时进行初始化，默认Segment数组大小为16
      */
     public ConcurrentHashMap() {
     }
@@ -833,6 +836,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * sizing to accommodate this many elements.
      * @throws IllegalArgumentException if the initial capacity of
      * elements is negative
+     *
+     * 在构造函数中指定Segment数组的大小，但是并没有初始化数组，在put操作时获取sizeCtl进行初始化操作
      */
     public ConcurrentHashMap(int initialCapacity) {
         if (initialCapacity < 0)
@@ -849,7 +854,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @param m the map
      */
     public ConcurrentHashMap(Map<? extends K, ? extends V> m) {
-        this.sizeCtl = DEFAULT_CAPACITY;
+        this.sizeCtl = DEFAULT_CAPACITY;//16
         putAll(m);
     }
 
@@ -1012,9 +1017,12 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         if (key == null || value == null) throw new NullPointerException();
         int hash = spread(key.hashCode());
         int binCount = 0;
+        //使用自旋的方式对插入元素进行重试
         for (Node<K,V>[] tab = table;;) {
             Node<K,V> f; int n, i, fh;
+            //插入元素时进行判断table是否为null
             if (tab == null || (n = tab.length) == 0)
+                //如果为null，未被初始化过，则进行初始化操作，默认初始大小为16
                 tab = initTable();
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
                 if (casTabAt(tab, i, null,//cas无锁化提高效率,同时保证线程安全
@@ -1368,6 +1376,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * Stripped-down version of helper class used in previous version,
      * declared for the sake of serialization compatibility
      */
+    //Segment将HashMap中的table分为为多个Segment，即：Segment，继承了ReentrantLock，支持并发操作
     static class Segment<K,V> extends ReentrantLock implements Serializable {
         private static final long serialVersionUID = 2249069246763182397L;
         final float loadFactor;
