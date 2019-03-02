@@ -61,6 +61,7 @@ public class AccessibleObject implements AnnotatedElement {
      * has sufficient privilege to defeat Java language access
      * control checks.
      */
+    //定义反射的默认操作权限：suppressAccessChecks
     static final private java.security.Permission ACCESS_PERMISSION =
         new ReflectPermission("suppressAccessChecks");
 
@@ -148,8 +149,9 @@ public class AccessibleObject implements AnnotatedElement {
      *
      * @return the value of the object's {@code accessible} flag
      */
+    //是否可以快速获取，默认是不能
     public boolean isAccessible() {
-        return override;
+        return override;//返回重新写入的值
     }
 
     /**
@@ -163,7 +165,7 @@ public class AccessibleObject implements AnnotatedElement {
     //
     // NOTE: for security purposes, this field must not be visible
     // outside this package.
-    boolean override;
+    boolean override;//是否重置安全检查，这里的override初始默认值是false
 
     // Reflection factory used by subclasses for creating field,
     // method, and constructor accessors. Note that this is called

@@ -154,6 +154,11 @@ public final class Constructor<T> extends Executable {
         return annotations;
     }
 
+    @Override
+    Executable getRoot() {
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
