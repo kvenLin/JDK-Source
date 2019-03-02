@@ -509,6 +509,16 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
     /**
      * Handler called when saturated or shutdown in execute.
+     * JDK 内置的拒绝策略如下:
+     * 1. AbortPolicy : 直接抛出异常,阻止系统正常运行。
+     * 2. CallerRunsPolicy : 只要线程池未关闭,该策略直接在调用者线程中,运行当前被丢弃的
+     * 任务。显然这样做不会真的丢弃任务,但是,任务提交线程的性能极有可能会急剧下降。
+     * 3. DiscardOldestPolicy : 丢弃最老的一个请求,也就是即将被执行的一个任务,并尝试再
+     * 次提交当前任务。
+     * 4. DiscardPolicy : 该策略默默地丢弃无法处理的任务,不予任何处理。如果允许任务丢
+     * 失,这是最好的一种方案。
+     * 以上内置拒绝策略均实现了 RejectedExecutionHandler 接口,若以上策略仍无法满足实际
+     * 需要,完全可以自己扩展 RejectedExecutionHandler 接口。
      */
     private volatile RejectedExecutionHandler handler;
 
@@ -544,7 +554,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * The default rejected execution handler
      */
     private static final RejectedExecutionHandler defaultHandler =
-        new AbortPolicy();
+        new AbortPolicy();//当任务添加到线程池中被拒绝时，它将抛出 RejectedExecutionException 异常
 
     /**
      * Permission required for callers of shutdown and shutdownNow.
@@ -1293,13 +1303,13 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * @throws NullPointerException if {@code workQueue}
      *         or {@code threadFactory} or {@code handler} is null
      */
-    public ThreadPoolExecutor(int corePoolSize,
-                              int maximumPoolSize,
-                              long keepAliveTime,
-                              TimeUnit unit,
-                              BlockingQueue<Runnable> workQueue,
-                              ThreadFactory threadFactory,
-                              RejectedExecutionHandler handler) {
+    public ThreadPoolExecutor(int corePoolSize,//指定了线程池中的线程数量
+                              int maximumPoolSize,//指定线程池中最大线程数
+                              long keepAliveTime,//当前线程池数量超过 corePoolSize 时,多余的空闲线程的存活时间,即多次时间内会被销毁
+                              TimeUnit unit,//keepAliveTime 的单位
+                              BlockingQueue<Runnable> workQueue,//任务队列,被提交但尚未被执行的任务
+                              ThreadFactory threadFactory,//线程工厂,用于创建线程,一般用默认的即可
+                              RejectedExecutionHandler handler) {//拒绝策略,当任务太多来不及处理,如何拒绝任务
         if (corePoolSize < 0 ||
             maximumPoolSize <= 0 ||
             maximumPoolSize < corePoolSize ||
