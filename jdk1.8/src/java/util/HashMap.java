@@ -433,7 +433,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     // Additionally, if the table array has not been allocated, this
     // field holds the initial array capacity, or zero signifying
     // DEFAULT_INITIAL_CAPACITY.)
-    int threshold;//HashMap的临界值,当达到临界值时需要重新分配大小,这里使用属性进行保存临界值避免重复计算
+    int threshold;//HashMap的临界值,即扩容上限,当达到临界值时需要重新分配大小,这里使用属性进行保存临界值避免重复计算
 
     /**
      * The load factor for the hash table.
@@ -719,36 +719,42 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * with a power of two offset in the new table.
      *
      * @return the table
+     *
+     * resize 的操作是需要对所有元素进行遍历后再移动其位置,是很耗时的操作,所以使用时应当尽量避免其进行 resize 操作
      */
     final Node<K,V>[] resize() {
         Node<K,V>[] oldTab = table;
         //当oldTab为null时设置oldCap旧容量为0;
         int oldCap = (oldTab == null) ? 0 : oldTab.length;
         int oldThr = threshold;//引用原有临界值
-        int newCap, newThr = 0;
+        int newCap, newThr = 0;//初始设置新的容量和新的扩容上限为0
         if (oldCap > 0) {
+            //超过最大值就不进行扩容操作,只能任随其进行碰撞
             if (oldCap >= MAXIMUM_CAPACITY) {
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
             }
+            //没有超过就扩容为原来的2倍
             else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
                      oldCap >= DEFAULT_INITIAL_CAPACITY)
                 newThr = oldThr << 1; // double threshold
         }
         //当原有临界值大于0时表示已经初始化过了
         else if (oldThr > 0) // initial capacity was placed in threshold
+            //如果已经初始过则将旧的扩容上限设置为新的容量
             newCap = oldThr;
         else {               // zero initial threshold signifies using defaults
             //临界值<=0表示还没有进行初始化,使用默认的初始容量进行初始化
             newCap = DEFAULT_INITIAL_CAPACITY;//16
             newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);//12
         }
+        //计算新的resize上线
         if (newThr == 0) {
             float ft = (float)newCap * loadFactor;
             newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
                       (int)ft : Integer.MAX_VALUE);
         }
-        threshold = newThr;
+        threshold = newThr;//更新临界上限
         @SuppressWarnings({"rawtypes","unchecked"})
                 //根据newCap进行生成table
             Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];//16大小的数组
@@ -760,6 +766,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 if ((e = oldTab[j]) != null) {
                     oldTab[j] = null;
                     if (e.next == null)
+                        //当前索引位置没有后续的节点,则直接将当前节点放入新的table对应的索引位置
                         newTab[e.hash & (newCap - 1)] = e;
                     else if (e instanceof TreeNode)
                         ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
@@ -784,10 +791,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                                 hiTail = e;
                             }
                         } while ((e = next) != null);
+                        //原索引放到bucket里
                         if (loTail != null) {
                             loTail.next = null;
                             newTab[j] = loHead;
                         }
+                        //原索引 + oldCap放到bucket里
                         if (hiTail != null) {
                             hiTail.next = null;
                             newTab[j + oldCap] = hiHead;
@@ -2170,6 +2179,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
          * @param tab the table for recording bin heads
          * @param index the index of the table being split
          * @param bit the bit of hash to split on
+         * 将红黑树的所有节点进行拆分插入新的扩容的 table 中
          */
         final void split(HashMap<K,V> map, Node<K,V>[] tab, int index, int bit) {
             TreeNode<K,V> b = this;
