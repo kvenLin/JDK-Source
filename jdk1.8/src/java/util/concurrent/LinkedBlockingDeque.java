@@ -139,6 +139,7 @@ public class LinkedBlockingDeque<E>
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
+    //记录头节点
     transient Node<E> first;
 
     /**
@@ -146,15 +147,19 @@ public class LinkedBlockingDeque<E>
      * Invariant: (first == null && last == null) ||
      *            (last.next == null && last.item != null)
      */
+    //记录尾节点
     transient Node<E> last;
 
     /** Number of items in the deque */
+    //总数
     private transient int count;
 
     /** Maximum number of items in the deque */
+    //最大容量
     private final int capacity;
 
     /** Main lock guarding all access */
+    //使用ReentrantLock保证队列出队的线程安全
     final ReentrantLock lock = new ReentrantLock();
 
     /** Condition for waiting takes */
@@ -252,6 +257,7 @@ public class LinkedBlockingDeque<E>
     /**
      * Removes and returns first element, or null if empty.
      */
+    //对第一个元素进行出队操作
     private E unlinkFirst() {
         // assert lock.isHeldByCurrentThread();
         Node<E> f = first;
@@ -549,7 +555,7 @@ public class LinkedBlockingDeque<E>
      * @throws NoSuchElementException {@inheritDoc}
      */
     public E getFirst() {
-        E x = peekFirst();
+        E x = peekFirst();//获取第一个元素
         if (x == null) throw new NoSuchElementException();
         return x;
     }
@@ -565,7 +571,7 @@ public class LinkedBlockingDeque<E>
 
     public E peekFirst() {
         final ReentrantLock lock = this.lock;
-        lock.lock();
+        lock.lock();//获取锁,保证在查看第一个元素时不会更新队列
         try {
             return (first == null) ? null : first.item;
         } finally {
@@ -629,6 +635,7 @@ public class LinkedBlockingDeque<E>
      * @throws IllegalStateException if this deque is full
      * @throws NullPointerException if the specified element is null
      */
+    //新增一个元素,如果队列已满,则抛出IllegalSlabException
     public boolean add(E e) {
         addLast(e);
         return true;
@@ -637,6 +644,7 @@ public class LinkedBlockingDeque<E>
     /**
      * @throws NullPointerException if the specified element is null
      */
+    //添加一个元素并返回true,队列已满则返回false
     public boolean offer(E e) {
         return offerLast(e);
     }
@@ -645,6 +653,7 @@ public class LinkedBlockingDeque<E>
      * @throws NullPointerException {@inheritDoc}
      * @throws InterruptedException {@inheritDoc}
      */
+    //添加一个元素,如果队列已满,则阻塞
     public void put(E e) throws InterruptedException {
         putLast(e);
     }
@@ -668,14 +677,17 @@ public class LinkedBlockingDeque<E>
      * @return the head of the queue represented by this deque
      * @throws NoSuchElementException if this deque is empty
      */
+    //移除并返回队列头部的元素,如果队列为空,则抛出一个NoSuchElementException
     public E remove() {
         return removeFirst();
     }
 
+    //移除并返回队列头部的元素,如果队列为空则返回null: peek() + remove() = poll();poll()是非阻塞的, take是阻塞的
     public E poll() {
         return pollFirst();
     }
 
+    //移除并返回队列头部的元素,则阻塞
     public E take() throws InterruptedException {
         return takeFirst();
     }
@@ -694,10 +706,12 @@ public class LinkedBlockingDeque<E>
      * @return the head of the queue represented by this deque
      * @throws NoSuchElementException if this deque is empty
      */
+    //返回队列头部的元素,如果队列为空则返回一个NoSuchElementException
     public E element() {
         return getFirst();
     }
 
+    //返回队列头部元素,队列为空返回null
     public E peek() {
         return peekFirst();
     }
