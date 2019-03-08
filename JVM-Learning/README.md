@@ -244,7 +244,7 @@
 * 相关参数学习:
     * -Xms20M -Xmx20M 限定堆内存大小20M
     * -XX:+UseSerialGC 使用Serial收集器
-    * -Xml10M 指定新生代内存10M
+    * -Xmn10M 指定新生代内存10M
     * -XX:SurvivorRatio=8 指定Eden区内存为8M
     * -XX:PretenureSizeThreshold=6M 大对象判定阀值为6M
 * 内存分配测试:
