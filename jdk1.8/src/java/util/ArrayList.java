@@ -870,6 +870,7 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @return an iterator over the elements in this list in proper sequence
      */
+    //获取迭代器
     public Iterator<E> iterator() {
         return new Itr();
     }

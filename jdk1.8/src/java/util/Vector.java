@@ -159,6 +159,7 @@ public class Vector<E>
      * has size {@code 10} and its standard capacity increment is
      * zero.
      */
+    //默认初始容量为10
     public Vector() {
         this(10);
     }

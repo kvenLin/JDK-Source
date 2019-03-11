@@ -334,7 +334,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * to incorporate impact of the highest bits that would otherwise
      * never be used in index calculations because of table bounds.
      *
-     * 计算hash值的核心方法
+     * 计算hash值的核心方法，当key为null时，得到hash值为0，即允许键为null
      */
     static final int hash(Object key) {
         int h;
@@ -651,7 +651,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param evict if false, the table is in creation mode.
      * @return previous value, or null if none
      */
-    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+    //onlyIfAbsent，if true，则表示只要当前节点的value != null则不会改变当前节点的value值
+    final V  putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
         //判断当前的table是否为空,若为空或长度为0,进行扩容初始化,并将其扩容后的长度赋值给n
@@ -674,9 +675,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             //3.key不相等,在链表后添加新节点,即链表的情况
             else {
-                //遍历树结构
+                //遍历链表结构
                 for (int binCount = 0; ; ++binCount) {
-                    //树结构中没有对应的key
+                    //链表结构中没有对应的key
                     if ((e = p.next) == null) {
                         //添加新的节点
                         p.next = newNode(hash, key, value, null);
@@ -686,8 +687,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                         break;
                     }
                     //树中有对应的key的节点,跳出遍历
-                    if (e.hash == hash &&
+                    if (e.hash == hash &&//判断是否产生hash碰撞，产生碰撞后比较其key值是否真正相等
                         ((k = e.key) == key || (key != null && key.equals(k))))
+                        //相等则跳出循环，当前e即为对应key的节点
                         break;
                     //即 p = p.next
                     p = e;

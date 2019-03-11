@@ -1466,6 +1466,7 @@ public final class String
      *
      * @return  a hash code value for this object.
      */
+    //重写Object的hashCode方法，根据value来获取hashCode，而不是按照内存地址进行获取
     public int hashCode() {
         int h = hash;
         if (h == 0 && value.length > 0) {

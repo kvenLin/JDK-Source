@@ -118,6 +118,7 @@ public class TreeMap<K,V>
      *
      * @serial
      */
+    //TreeMap实例时必须设置一个比较器，这样TreeMap才能在插入时进行排序处理
     private final Comparator<? super K> comparator;
 
     private transient Entry<K,V> root;

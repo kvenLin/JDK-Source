@@ -8,6 +8,7 @@ jdk源码学习
     * [常考面试题](#常考面试题)
 * [整型缓存](#整型缓存)
 * [重载](#重载)
+* [集合完整图谱](#集合完整图谱)
 * [ArrayList](#arraylist(非线程安全))
 * [Vector](#vector(线程安全))
 * [LinkedList](#linkedlist(非线程安全))
@@ -87,6 +88,8 @@ jdk源码学习
     * 如果子类覆盖了覆盖的方法,调用子类实例的方法,
     那么调用的就是子类中重写的方法,因为运行时类型一定是子类的类型,
     引用子类的那个类型可以是父类类型
+## 集合完整图谱
+![集合图谱](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/image/20160124221843905.png)
     
 ## ArrayList(非线程安全)
 * 实现了 RandomAccess 接口,标识着这个类可以快速随机访问
@@ -112,7 +115,7 @@ jdk源码学习
 * 区别于ArrayList： ArrayList不是同步的,所以在不需要保证线程安全时时建议使用ArrayList
 
 ## LinkedList(非线程安全)
-* 初始大小万为0
+* 初始大小为0
 * 实现了 List接口,Deque接口的双端链表
 
 ## HashMap(非线程安全)
@@ -174,7 +177,7 @@ jdk源码学习
     * synchronized只锁定当前链表或红黑二叉树的首节点,这样只要hash不冲突,就不会产生并发空,效率又提升N倍。
 * 1.8时结构: ![1.8时](https://camo.githubusercontent.com/2d779bf515db75b5bf364c4f23c31268330a865e/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f39373733393232302e6a7067)
 
-## Thread.ThreadLocal
+## ThreadLocal
 * 一般叫做线程本地变量
 * 实际使用ThreadLocalMap进行保存
 * 初始的ThreadLocalMap中的table容量为16

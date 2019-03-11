@@ -97,6 +97,7 @@ public class Object {
      * @see     java.lang.Object#equals(java.lang.Object)
      * @see     java.lang.System#identityHashCode
      */
+    //根据本地方法获取hashCode，依靠对象的地址和字段属性进行获取。一般两个对象==，则其hashcode一定相等；反之不成立
     public native int hashCode();
 
     /**
@@ -145,6 +146,7 @@ public class Object {
      * @see     #hashCode()
      * @see     java.util.HashMap
      */
+    //Object内部equals比较的内存地址，如果对象不重写该方法，则只有是同一个对象时才会返回true
     public boolean equals(Object obj) {
         return (this == obj);
     }

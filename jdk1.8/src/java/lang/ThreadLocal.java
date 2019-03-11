@@ -81,7 +81,7 @@ public class ThreadLocal<T> {
      * in the common case where consecutively constructed ThreadLocals
      * are used by the same threads, while remaining well-behaved in
      * less common cases.
-     * 计算当前ThreadLocal对象的HashCode,final限制当前成员属性只有
+     * 计算当前ThreadLocal对象的HashCode,final限制当前成员属性只有第一次实例化时才能进行设置
      */
     private final int threadLocalHashCode = nextHashCode();
 
@@ -215,10 +215,10 @@ public class ThreadLocal<T> {
     public void set(T value) {
         //获取当前线程
         Thread t = Thread.currentThread();
-        ThreadLocalMap map = getMap(t);//t.threadLocals
+        ThreadLocalMap map = getMap(t);//t.threadLocals，获取当前线程的ThreadLocalMap
         if (map != null)
             //若map存在,直接添加
-            map.set(this, value);
+            map.set(this, value);//this：即当前ThreadLocal对象；value：即需要存入的真正的内存变量
         else
             //若当前线程的ThreadLocalMap不存在创建map
             createMap(t, value);
@@ -268,10 +268,10 @@ public class ThreadLocal<T> {
      * Factory method to create map of inherited thread locals.
      * Designed to be called only from Thread constructor.
      *
-     * 关联子类ThreadLocal的map和父类Thread的map为同一个map
      * @param  parentMap the map associated with parent thread
      * @return a map containing the parent's inheritable bindings
      */
+    //关联子类ThreadLocal的map和父类Thread的map为同一个map，该方法是提供给父类Thread进行使用
     static ThreadLocalMap createInheritedMap(ThreadLocalMap parentMap) {
         return new ThreadLocalMap(parentMap);
     }
@@ -327,9 +327,10 @@ public class ThreadLocal<T> {
          * as "stale entries" in the code that follows.
          * 弱引用
          */
-        static class Entry extends WeakReference<ThreadLocal<?>> {
+
+        static class Entry extends WeakReference<ThreadLocal<?>> {//这里只有ThreadLocal使用了弱引用
             /** The value associated with this ThreadLocal. */
-            Object value;
+            Object value;//value使用的是强引用
 
             Entry(ThreadLocal<?> k, Object v) {
                 super(k);
@@ -386,6 +387,10 @@ public class ThreadLocal<T> {
          * one when we have at least one entry to put in it.
          */
         ThreadLocalMap(ThreadLocal<?> firstKey, Object firstValue) {//firstKey即当前的ThreadLocal对象
+            /**
+             * 面试常问： 为什么ThreadLocal会导致内存泄漏？
+             * 这里的ThreadLocalMap已经考虑到内存溢出，
+             */
             table = new Entry[INITIAL_CAPACITY];//初始的Map中的table容量为16
             //进行与运算类似求模,得到索引下标,与HashMap类似
             int i = firstKey.threadLocalHashCode & (INITIAL_CAPACITY - 1);
@@ -400,6 +405,7 @@ public class ThreadLocal<T> {
          *
          * @param parentMap the map associated with parent thread.
          */
+        //内部类ThreadLocalMap用于存放线程和线程对应的变量
         private ThreadLocalMap(ThreadLocalMap parentMap) {
             Entry[] parentTable = parentMap.table;
             int len = parentTable.length;
@@ -436,11 +442,12 @@ public class ThreadLocal<T> {
          * @return the entry associated with key, or null if no such
          */
         private Entry getEntry(ThreadLocal<?> key) {
-            int i = key.threadLocalHashCode & (table.length - 1);
+            int i = key.threadLocalHashCode & (table.length - 1);//同HashMap根据(n - 1) & hash 得到对应的下标索引
             Entry e = table[i];
             if (e != null && e.get() == key)
                 return e;
             else
+                //直接散列到的位置没找到，那么顺着hash表递增（循环）地往下找
                 return getEntryAfterMiss(key, i, e);
         }
 
@@ -462,6 +469,7 @@ public class ThreadLocal<T> {
                 if (k == key)
                     return e;
                 if (k == null)
+                    //删除被jvm回收的对象
                     expungeStaleEntry(i);
                 else
                     i = nextIndex(i, len);

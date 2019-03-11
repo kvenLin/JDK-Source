@@ -2374,6 +2374,7 @@ public class Collections {
      * @return a synchronized view of the specified list.
      */
     public static <T> List<T> synchronizedList(List<T> list) {
+        //根据RandomAccess判断返回不同类型的list，若RandomAccess表示可以随机访问，则为数组结构
         return (list instanceof RandomAccess ?
                 new SynchronizedRandomAccessList<>(list) :
                 new SynchronizedList<>(list));
