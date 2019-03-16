@@ -286,8 +286,8 @@
     * file=/home/hk/heap.bin , 指定生成的文件路径
     * <pid\> 指定对应的进程号
 ### jconsole
-* [使用教程](https://docs.oracle.com/javase/1.5.0/docs/guide/management/jconsole.html)
-
+* [官方文档使用教程](https://docs.oracle.com/javase/1.5.0/docs/guide/management/jconsole.html)
+* [配置远程监控](https://blog.csdn.net/Box_clf/article/details/88344631)
 ## Class文件
 ### Class文件结构
 * 是一组以8位字节为基础单位的二进制流,各个数据项目严格按照顺序紧凑的排在Class文件中,中间没有分隔符
@@ -365,7 +365,7 @@ char '0';
 > <init\>()是初始化实例对象的,<clinit\>()是初始化类或者接口的
 ### 双亲委派模型
 * 实际就是子类加载器加载时会先扔给父类进行加载,如果父类加载不了抛出异常后,再交给子类进行加载
-* [对ClassLoader.java的loadClass()加载流程进行分析](https://github.com/kvenLin/JDK-Source/jdk1.8/src/java/lang/ClassLoader.java),第403行
+* [对ClassLoader.java的loadClass()加载流程进行分析](https://github.com/kvenLin/JDK-Source/blob/master/jdk1.8/src/java/lang/ClassLoader.java),第403行
 
 ## 虚拟机字节码执行引擎
 ### 运行时栈帧结构
