@@ -441,7 +441,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * return null even if it may later return non-null when delays
      * expire.
      */
-    private final BlockingQueue<Runnable> workQueue;
+    private final BlockingQueue<Runnable> workQueue;//线程是内部队列是阻塞队列
 
     /**
      * Lock held on access to workers set and related bookkeeping.
@@ -901,9 +901,15 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * state).
      * @return true if successful
      */
+    /**
+     * 将当前线程任务添加到工作队列
+     * @param firstTask
+     * @param core
+     * @return
+     */
     private boolean addWorker(Runnable firstTask, boolean core) {
         retry:
-        for (;;) {
+        for (;;) {//采用自旋 + cas的方式获取锁
             int c = ctl.get();
             int rs = runStateOf(c);
 
@@ -1362,12 +1368,13 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
          * thread.  If it fails, we know we are shut down or saturated
          * and so reject the task.
          */
-        int c = ctl.get();
-        if (workerCountOf(c) < corePoolSize) {
-            if (addWorker(command, true))
-                return;
-            c = ctl.get();
+        int c = ctl.get();//获取当前线程数
+        if (workerCountOf(c) < corePoolSize) {//当工作线程小于核心线程数时
+            if (addWorker(command, true))//添加工作线程
+                return;//如果添加成功直接返回
+            c = ctl.get();//获取添加后的线程数
         }
+        //如果当前工作线程数大于核心线程数，则将任务添加到队列
         if (isRunning(c) && workQueue.offer(command)) {
             int recheck = ctl.get();
             if (! isRunning(recheck) && remove(command))
@@ -1375,6 +1382,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             else if (workerCountOf(recheck) == 0)
                 addWorker(null, false);
         }
+        //如果放入workQueue任务失败，则创建线程任务，如果创建线程任务失败，就会调用reject
         else if (!addWorker(command, false))
             reject(command);
     }
