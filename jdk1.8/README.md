@@ -45,9 +45,9 @@ jdk源码学习
 这里分享一下自己阅读的经验,我使用的是intellij
 * 学会使用bookmarks,用于标记阅读源码的位置便于下一次继续进行阅读
     * bookmarks标记: ctrl + 单击鼠标左键
-    ![bookmark标记](http://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_002.png)
+    ![bookmark标记](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_002.png)
     * 查看标记内容: Shift + F11
-    ![查看标记内容](http://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_003.png)
+    ![查看标记内容](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_003.png)
     * [参考博客](https://blog.csdn.net/qq_36376059/article/details/80277767)
 * **学会进行写注释**,可以结合博客和自己的理解然后进行分析写注释
 ## String
@@ -109,8 +109,8 @@ jdk源码学习
     * toString方法底层使用Arrays.copyOf()
     * add()或remove()使用的是System.arraycopy()
     * 实质:copyOf()底层还是由arraycopy()实现
-    * [copyOf()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArraycopyTest.java)
-    * [arraycopy()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
+    * [copyOf()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
+    * [arraycopy()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArraycopyTest.java)
 ## Vector(线程安全)
 * 出构造发方法以外的所有方法都是synchronized同步的
 * 区别于ArrayList： ArrayList不是同步的,所以在不需要保证线程安全时时建议使用ArrayList
@@ -152,7 +152,7 @@ jdk源码学习
 ### HahMap线程不安全出现的死循环问题
 * put流程:
 
-![HashMap进行put流程](http://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_004.png)
+![HashMap进行put流程](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_004.png)
 
 * 多线程操作时主要存在线程安全的方法是: resize()
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
@@ -206,7 +206,7 @@ jdk源码学习
     * 存在则**传入this**,进行移除对应的键值对
 * protected T initialValue()
     * 默认初始的ThreadLocal返回的value为null,一般会对该方法进行重写
-* [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/Thread.ThreadLocal/ThreadLocalDemo.java)
+* [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ThreadLocal/ThreadLocalDemo.java)
 ### 关于为什么ThreadLocal中的Entry申明为弱引用?
 [参考博客](https://www.cnblogs.com/waterystone/p/6612202.html)
 ### 相关问题
@@ -216,7 +216,7 @@ jdk源码学习
 而这里的Entry所存储的obj我们已经不能从ThreadLocalMap中取出使用,
 所以这里的Entry已经可以进行回收,只有使用弱引用才能被垃圾回收器回收.
 
-##AQS简析
+## AQS简析
 [参考博客](http://www.cnblogs.com/waterystone/p/4920797.html)
 ### 主要流程
 * 调用自定义同步器的tryAcquire()尝试直接去获取资源，如果成功则直接返回；

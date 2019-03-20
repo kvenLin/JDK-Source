@@ -8,7 +8,7 @@
 ## 条件准备
 * 简单编写一个使用synchronized修饰静态代码块的方法[Test.java](https://github.com/kvenLin/JDK-Source/blob/master/Test/Synchronized/Test.java)
 * 使用javac Test.java 对当Test.java进行编译
-* 然后使用javap -c Test > Test.txt 对class文件进行反编译并将输出结果保存到[Test.txt](https://github.com/kvenLin/JDK-Source/blob/master/Test/Synchronized/Test.txt)文件中
+* 然后使用javap -c Test > Test.txt 对class文件进行反编译并将输出结果保存到[Test.txt](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/Synchronized/Test.txt)文件中
 
 ## 简要分析
 在Test.txt文件中可以看到两个关键指令: monitorenter和monitorexit
