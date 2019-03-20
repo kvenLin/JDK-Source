@@ -224,7 +224,7 @@ jdk源码学习
 * acquireQueued()使线程在等待队列中休息，有机会时（轮到自己，会被unpark()）会去尝试获取资源。获取到资源后才返回。如果在整个等待过程中被中断过，则返回true，否则返回false。
 * 如果线程在等待过程中被中断过，它是不响应的。只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。
 
-![流程图示](https://images2015.cnblogs.com/blog/721070/201511/721070-20151102145743461-623794326.png)
+![流程图示](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/AQS.png)
 
 ## synchronized 和 ReentrantLock
 ### ReentrantLock
