@@ -152,7 +152,7 @@ jdk源码学习
 ### HahMap线程不安全出现的死循环问题
 * put流程:
 
-![HashMap进行put流程](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_004.png)
+![HashMap进行put流程](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/HashMap_put.png)
 
 * 多线程操作时主要存在线程安全的方法是: resize()
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
