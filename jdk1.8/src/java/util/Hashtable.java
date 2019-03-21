@@ -465,7 +465,7 @@ public class Hashtable<K,V>
         // Makes sure the key is not already in the hashtable.
         Entry<?,?> tab[] = table;
         int hash = key.hashCode();
-        int index = (hash & 0x7FFFFFFF) % tab.length;
+        int index = (hash & 0x7FFFFFFF) % tab.length;//这里使用的 % 进行求余，没有进行(n - 1) & hash 操作，所以初始容量是11而不是2的x次幂
         @SuppressWarnings("unchecked")
         Entry<K,V> entry = (Entry<K,V>)tab[index];
         for(; entry != null ; entry = entry.next) {
