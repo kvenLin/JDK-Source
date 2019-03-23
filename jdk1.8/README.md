@@ -181,7 +181,7 @@ jdk源码学习
 * **默认Segment有16个**，也就是说可以**支持16个线程的并发**，在初始化是可以进行设置，一旦初始化就无法修改（**Segment不可扩容**），但是Segment内部的**Entry数组是可扩容的**。
 * 1.7时结构: 
 
-![1.7时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/Src/image/ConcurrentHashMap1.7.png)
+![1.7时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/ConcurrentHashMap1.7.png)
 
 ### 1.8版本
 * **摒弃了分段锁的概念，启用 node + CAS + Synchronized 代替Segment**
@@ -191,7 +191,7 @@ jdk源码学习
 * **默认sizeCtl = 16，初始化时可以进行设置**
 * 1.8时结构: 
 
-![1.8时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/Src/image/ConcurrentHashMap1.8.png)
+![1.8时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/ConcurrentHashMap1.8.png)
 ### 1.8核心源码解析
 * put方法：
 ```
@@ -267,7 +267,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ```
 * 流程图：
 
-![ConcurrentHashMap流程图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/Src/image/ConcurrentHashMap1.8_put.png)
+![ConcurrentHashMap流程图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/ConcurrentHashMap1.8_put.png)
 
 ## ThreadLocal
 * 一般叫做线程本地变量
