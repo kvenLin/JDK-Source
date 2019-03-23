@@ -20,6 +20,9 @@ jdk源码学习
 * [LinkedHashMap](#linkedhashmap(非线程安全))
 * [HashSet](#hashset(非线程安全))
 * [ConcurrentHashMap](#concurrenthashmap(线程安全))
+    * [1.7版本](#1.7版本)
+    * [1.8版本](#1.8版本)
+    * [1.8核心源码解析](#1.8核心源码解析)
 * [ThreadLocal](#threadlocal)
     * [主要方法](#主要方法)
     * [关于为什么ThreadLocal中的Entry申明为弱引用?](#关于为什么ThreadLocal中的Entry申明为弱引用?)
@@ -171,12 +174,100 @@ jdk源码学习
 * 底层使用的是HashMap
 
 ## ConcurrentHashMap(线程安全)
-* 底层使用的 分段数组 + 链表/红黑二叉树
-* 1.7时采用**分段锁(Segment)将整个数组分隔为多段数组**
-* 1.7时结构: ![1.7时](https://camo.githubusercontent.com/443af05b6be6ed09e50c78a1dca39bf75acb106d/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f33333132303438382e6a7067)
-* 1.8时采用**synchronized 和 CAS来操作**
-    * synchronized只锁定当前链表或红黑二叉树的首节点,这样只要hash不冲突,就不会产生并发空,效率又提升N倍。
-* 1.8时结构: ![1.8时](https://camo.githubusercontent.com/2d779bf515db75b5bf364c4f23c31268330a865e/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f39373733393232302e6a7067)
+### 1.7版本
+* 主要使用的是Segment分段锁
+* 内部拥有一个Entry数组，每个数组的每个元素又有一个链表
+* 同时Segment继承ReetrantLock来进行加锁
+* **默认Segment有16个**，也就是说可以**支持16个线程的并发**，在初始化是可以进行设置，一旦初始化就无法修改（**Segment不可扩容**），但是Segment内部的**Entry数组是可扩容的**。
+* 1.7时结构: 
+
+![1.7时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/Src/image/ConcurrentHashMap1.7.png)
+
+### 1.8版本
+* **摒弃了分段锁的概念，启用 node + CAS + Synchronized 代替Segment**
+* 当前的 table[ (n - 1) & hash ] == null 时，采用**CAS操作**
+* 当产生hash冲突时，采用**synchronized关键字**
+* 内部结构和HashMap相同，仍然使用： **数组 + 链表 + 红黑树**
+* **默认sizeCtl = 16，初始化时可以进行设置**
+* 1.8时结构: 
+
+![1.8时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/Src/image/ConcurrentHashMap1.8.png)
+### 1.8核心源码解析
+* put方法：
+```
+public V put(K key, V value) {
+    return putVal(key, value, false);
+}
+
+final V putVal(K key, V value, boolean onlyIfAbsent) {
+    if (key == null || value == null) throw new NullPointerException();
+    int hash = spread(key.hashCode());
+    int binCount = 0;
+    //使用自旋的方式对插入元素进行重试
+    for (Node<K,V>[] tab = table;;) {
+        Node<K,V> f; int n, i, fh;
+        //插入元素时进行判断table是否为null
+        if (tab == null || (n = tab.length) == 0)
+            //如果为null，未被初始化过，则进行初始化操作，默认初始大小为16
+            tab = initTable();
+        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {//若当前索引坐标元素为null，则直接进行cas添加
+            if (casTabAt(tab, i, null,//cas无锁化提高效率,同时保证线程安全
+                         new Node<K,V>(hash, key, value, null)))
+                break;                   // no lock when adding to empty bin
+        }
+        else if ((fh = f.hash) == MOVED)//当前Map在扩容，先协助扩容，再更新值
+            tab = helpTransfer(tab, f);
+        else {// hash冲突
+            V oldVal = null;
+            synchronized (f) {//以对应索引元素f节点作为锁
+                if (tabAt(tab, i) == f) {//双重判断，是否为原头节点，是否当前期间进行了改变
+                    if (fh >= 0) {//判断当前节点hash >= 0,大于0说明是链表结构，因为红黑树的TreeBin节点的hash为-2
+                        binCount = 1;
+                        for (Node<K,V> e = f;; ++binCount) {//遍历
+                            K ek;
+                            if (e.hash == hash && ((ek = e.key) == key // 节点已经存在，修改链表节点的值
+                                    || (ek != null && key.equals(ek)))) {
+                                oldVal = e.val;
+                                if (!onlyIfAbsent)
+                                    e.val = value;
+                                break;
+                            }
+                            Node<K,V> pred = e;
+                            if ((e = e.next) == null) {     // 节点不存在，加到链表末尾
+                                pred.next = new Node<K,V>(hash, key,
+                                                          value, null);
+                                break;
+                            }
+                        }
+                    }
+                    else if (f instanceof TreeBin) {//是否是红黑树结构
+                        Node<K,V> p;
+                        binCount = 2;//标识当前是红黑树
+                        if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
+                                                       value)) != null) {
+                            oldVal = p.val;
+                            if (!onlyIfAbsent)
+                                p.val = value;
+                        }
+                    }
+                }
+            }
+            if (binCount != 0) {//binCount即不等于0,表示进行了遍历添加操作
+                if (binCount >= TREEIFY_THRESHOLD)//如果大于8,则保证了是链表遍历添加操作
+                    treeifyBin(tab, i);//进行链表 ---> 红黑树的转换
+                if (oldVal != null)
+                    return oldVal;
+                break;
+            }
+        }
+    }
+    addCount(1L, binCount);// 统计节点个数，检查是否需要resize
+    return null;
+}
+```
+* 流程图：
+
+![ConcurrentHashMap流程图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/Src/image/ConcurrentHashMap1.8_put.png)
 
 ## ThreadLocal
 * 一般叫做线程本地变量

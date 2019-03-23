@@ -681,7 +681,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     if ((e = p.next) == null) {
                         //添加新的节点
                         p.next = newNode(hash, key, value, null);
-                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        if (binCount >= TREEIFY_THRESHOLD - 1) //这里binCount是从0开始计数，所以需要与TREEIFY_THRESHOLD - 1 = 8 - 1 = 7进行比较
                             //将当前链表结构转换成对应的树结构
                             treeifyBin(tab, hash);
                         break;

@@ -509,24 +509,28 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * because the top two bits of 32bit hash fields are used for
      * control purposes.
      */
+    //node最大容量： 2^30 = 1073741824
     private static final int MAXIMUM_CAPACITY = 1 << 30;
 
     /**
      * The default initial table capacity.  Must be a power of 2
      * (i.e., at least 1) and at most MAXIMUM_CAPACITY.
      */
+    //默认容量： 16 = 2^4，满足2的x次幂
     private static final int DEFAULT_CAPACITY = 16;
 
     /**
      * The largest possible (non-power of two) array size.
      * Needed by toArray and related methods.
      */
+    //node数组允许最大值
     static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /**
      * The default concurrency level for this table. Unused but
      * defined for compatibility with previous versions of this class.
      */
+    //并发级别：16, 以前遗留的，为兼容以前的版本
     private static final int DEFAULT_CONCURRENCY_LEVEL = 16;
 
     /**
@@ -536,6 +540,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * simpler to use expressions such as {@code n - (n >>> 2)} for
      * the associated resizing threshold.
      */
+    //负载因子
     private static final float LOAD_FACTOR = 0.75f;
 
     /**
@@ -546,6 +551,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * tree removal about conversion back to plain bins upon
      * shrinkage.
      */
+    //转换红黑树的阀值，即当前node链表长度 > 8 时转换成红黑树
     static final int TREEIFY_THRESHOLD = 8;
 
     /**
@@ -553,6 +559,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * resize operation. Should be less than TREEIFY_THRESHOLD, and at
      * most 6 to mesh with shrinkage detection under removal.
      */
+    //树转链表的阀值 = 6
     static final int UNTREEIFY_THRESHOLD = 6;
 
     /**
@@ -592,8 +599,12 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /*
      * Encodings for Node hash fields. See above for explanation.
      */
-    static final int MOVED     = -1; // hash for forwarding nodes
-    static final int TREEBIN   = -2; // hash for roots of trees
+    /**
+     * hash = -1是即MOVED，表示其中存储nextTable的引用。
+     * 只有table发生扩容的时候，ForwardingNode才会起作用，作为一个占位符放在table中表示当前将节点为null或已经被移动。
+     */
+    static final int MOVED     = -1; // 定义当前节点处于扩容转移的过程
+    static final int TREEBIN   = -2; // 定义红黑树的根节点的hash为-2
     static final int RESERVED  = -3; // hash for transient reservations
     static final int HASH_BITS = 0x7fffffff; // usable bits of normal node hash
 
@@ -752,15 +763,18 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      */
 
     @SuppressWarnings("unchecked")
+    //获取tab数组的第i个node
     static final <K,V> Node<K,V> tabAt(Node<K,V>[] tab, int i) {
         return (Node<K,V>)U.getObjectVolatile(tab, ((long)i << ASHIFT) + ABASE);
     }
 
+    //利用CAS算法设置i位置上的node节点。在CAS中，会比较内存中的值与你指定的这个值是否相等，如果相等才接受
+    //你的修改，否则拒绝修改，即这个操作有可能不成功。
     static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
-                                        Node<K,V> c, Node<K,V> v) {
+                                        Node<K,V> c, Node<K,V> v) {//参数：1.tab数组，2.坐标索引，3.当前节点值（即预期值），4.修改值
         return U.compareAndSwapObject(tab, ((long)i << ASHIFT) + ABASE, c, v);
     }
-
+    //利用volatile方法设置第i个节点的值，这个操作一定是成功的。
     static final <K,V> void setTabAt(Node<K,V>[] tab, int i, Node<K,V> v) {
         U.putObjectVolatile(tab, ((long)i << ASHIFT) + ABASE, v);
     }
@@ -939,16 +953,18 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      */
     public V get(Object key) {
         Node<K,V>[] tab; Node<K,V> e, p; int n, eh; K ek;
-        int h = spread(key.hashCode());
+        int h = spread(key.hashCode());//计算hash
+        //如果tab不为空并且tab[hash]里面的节点不为空
         if ((tab = table) != null && (n = tab.length) > 0 &&
             (e = tabAt(tab, (n - 1) & h)) != null) {
-            if ((eh = e.hash) == h) {
+            if ((eh = e.hash) == h) {//当前节点的hash相等
                 if ((ek = e.key) == key || (ek != null && key.equals(ek)))
-                    return e.val;
+                    //如果比较key是否是同一对象，不是进行equals比较值是否相等
+                    return e.val;//相等返回val值
             }
-            else if (eh < 0)
+            else if (eh < 0)//eh < 0 只有可能是MOVED(-1)或TREEBIN(-2)
                 return (p = e.find(h, key)) != null ? p.val : null;
-            while ((e = e.next) != null) {
+            while ((e = e.next) != null) {//链表
                 if (e.hash == h &&
                     ((ek = e.key) == key || (ek != null && key.equals(ek))))
                     return e.val;
@@ -1024,40 +1040,39 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             if (tab == null || (n = tab.length) == 0)
                 //如果为null，未被初始化过，则进行初始化操作，默认初始大小为16
                 tab = initTable();
-            else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+            else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {//若当前索引坐标元素为null，则直接进行cas添加
                 if (casTabAt(tab, i, null,//cas无锁化提高效率,同时保证线程安全
                              new Node<K,V>(hash, key, value, null)))
                     break;                   // no lock when adding to empty bin
             }
-            else if ((fh = f.hash) == MOVED)
+            else if ((fh = f.hash) == MOVED)//当前Map在扩容，先协助扩容，再更新值
                 tab = helpTransfer(tab, f);
-            else {
+            else {// hash冲突
                 V oldVal = null;
-                synchronized (f) {//以临时变量node节点作为锁
-                    if (tabAt(tab, i) == f) {//双重判断
-                        if (fh >= 0) {
+                synchronized (f) {//以对应索引元素f节点作为锁
+                    if (tabAt(tab, i) == f) {//双重判断，是否为原头节点，是否当前期间进行了改变
+                        if (fh >= 0) {//判断当前节点hash >= 0,大于0说明是链表结构，因为红黑树的TreeBin节点的hash为-2
                             binCount = 1;
-                            for (Node<K,V> e = f;; ++binCount) {
+                            for (Node<K,V> e = f;; ++binCount) {//遍历
                                 K ek;
-                                if (e.hash == hash &&
-                                    ((ek = e.key) == key ||
-                                     (ek != null && key.equals(ek)))) {
+                                if (e.hash == hash && ((ek = e.key) == key // 节点已经存在，修改链表节点的值
+                                        || (ek != null && key.equals(ek)))) {
                                     oldVal = e.val;
                                     if (!onlyIfAbsent)
                                         e.val = value;
                                     break;
                                 }
                                 Node<K,V> pred = e;
-                                if ((e = e.next) == null) {
+                                if ((e = e.next) == null) {     // 节点不存在，加到链表末尾
                                     pred.next = new Node<K,V>(hash, key,
                                                               value, null);
                                     break;
                                 }
                             }
                         }
-                        else if (f instanceof TreeBin) {
+                        else if (f instanceof TreeBin) {//是否是红黑树结构
                             Node<K,V> p;
-                            binCount = 2;
+                            binCount = 2;//标识当前是红黑树
                             if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
                                                            value)) != null) {
                                 oldVal = p.val;
@@ -1067,16 +1082,16 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                         }
                     }
                 }
-                if (binCount != 0) {
-                    if (binCount >= TREEIFY_THRESHOLD)
-                        treeifyBin(tab, i);
+                if (binCount != 0) {//binCount即不等于0,表示进行了遍历添加操作
+                    if (binCount >= TREEIFY_THRESHOLD)//如果大于8,则保证了是链表遍历添加操作
+                        treeifyBin(tab, i);//进行链表 ---> 红黑树的转换
                     if (oldVal != null)
                         return oldVal;
                     break;
                 }
             }
         }
-        addCount(1L, binCount);
+        addCount(1L, binCount);// 统计节点个数，检查是否需要resize
         return null;
     }
 
@@ -2168,7 +2183,10 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /* ---------------- Special Nodes -------------- */
 
     /**
-     * A node inserted at head of bins during transfer operations.
+     * ForwardingNode：
+     * 一个用于连接两个table的节点类。它包含一个nextTable指针，用于指向下一张表。
+     * 而且这个节点的key value next指针全部为null，它的hash值为-1。
+     * 这里面定义的find的方法是从nextTable里进行查询节点，而不是以自身为头节点进行查找。
      */
     static final class ForwardingNode<K,V> extends Node<K,V> {
         final Node<K,V>[] nextTable;
@@ -2233,6 +2251,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     private final Node<K,V>[] initTable() {
         Node<K,V>[] tab; int sc;
         while ((tab = table) == null || tab.length == 0) {
+            //如果一个线程发现sizeCtl < 0, 意味着另外的线程执行CAS操作成功,当前线程只需要让出cpu时间片
             if ((sc = sizeCtl) < 0)
                 Thread.yield(); // lost initialization race; just spin
             else if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
@@ -2638,7 +2657,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                                 tl.next = p;
                             tl = p;
                         }
-                        setTabAt(tab, index, new TreeBin<K,V>(hd));
+                        setTabAt(tab, index, new TreeBin<K,V>(hd));//将红黑树的根节点hd传入TreeBin中
                     }
                 }
             }
@@ -2757,8 +2776,9 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * Creates bin with initial set of nodes headed by b.
          */
         TreeBin(TreeNode<K,V> b) {
+            //定义节点为红黑树的节点时就设置其hash为TREEBIN = -2
             super(TREEBIN, null, null, null);
-            this.first = b;
+            this.first = b;//将当前红黑树的root节点设为treeBin的first节点
             TreeNode<K,V> r = null;
             for (TreeNode<K,V> x = b, next; x != null; x = next) {
                 next = (TreeNode<K,V>)x.next;
@@ -2766,7 +2786,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                 if (r == null) {
                     x.parent = null;
                     x.red = false;
-                    r = x;
+                    r = x;//将根节点的元素复制到root节点
                 }
                 else {
                     K k = x.key;
