@@ -349,6 +349,58 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         * ReentrantLock提供有限时间等候锁（设置过期时间）、可中断锁（lockInterruptibly）、condition（提供await、signal等方法）等丰富语义 
         * ReentrantLock提供公平锁和非公平锁实现
         * synchronized不可设置等待时间、不可被中断（interrupted）
+## 类加载源码分析
+### 核心源码解读
+```
+protected Class<?> loadClass(String name, boolean resolve)
+        throws ClassNotFoundException//
+    {
+        synchronized (getClassLoadingLock(name)) {
+            // First, check if the class has already been loaded
+            Class<?> c = findLoadedClass(name);//判断该类是否被加载过
+            if (c == null) {//没有被加载才进行加载
+                long t0 = System.nanoTime();
+                try {
+                    if (parent != null) {//父类不为空时
+                        //将加载任务交给父类进行加载
+                        c = parent.loadClass(name, false);
+                    } else {
+                        //如果父类为null交给启动类进行加载
+                        c = findBootstrapClassOrNull(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ClassNotFoundException thrown if class not found
+                    // from the non-null parent class loader
+                }
+
+                //判断父类是否加载成功
+                if (c == null) {
+                    // If still not found, then invoke findClass in order
+                    // to find the class.
+                    /**
+                     * 父类加载后仍然是null,则没有加载成功,则在当前方法进行具体的加载过程
+                     */
+                    long t1 = System.nanoTime();
+                    c = findClass(name);
+
+                    // this is the defining class loader; record the stats
+                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+                    sun.misc.PerfCounter.getFindClasses().increment();
+                }
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }
+```
+### 类加载流程图
+![类加载流程](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/ClassLoader.png)
+### 总结
+>类加载时首先会去判断是否存在父类，如果父类存在则交给父类进行加载，依次向上找顶层；
+如果父类无法加载就或加载异常，就向下交给子类进行加载。
 
 ## IO流
 * 字节流
