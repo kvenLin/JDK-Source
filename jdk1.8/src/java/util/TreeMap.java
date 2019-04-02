@@ -163,6 +163,7 @@ public class TreeMap<K,V>
      *        If {@code null}, the {@linkplain Comparable natural
      *        ordering} of the keys will be used.
      */
+    //因为内部红黑树在添加元素时需要一个比较器来对插入的元素的值进行比较
     public TreeMap(Comparator<? super K> comparator) {
         this.comparator = comparator;
     }
@@ -534,10 +535,13 @@ public class TreeMap<K,V>
      *         does not permit null keys
      */
     public V put(K key, V value) {
+        //获取根节点
         Entry<K,V> t = root;
+        //若根节点为null，则直接插入
         if (t == null) {
+            //这里很巧妙，如果实现了comparator，那么key是可以为null的，否则会抛出NullPointerException
             compare(key, key); // type (and possibly null) check
-
+            //设为root节点
             root = new Entry<>(key, value, null);
             size = 1;
             modCount++;
@@ -1288,6 +1292,7 @@ public class TreeMap<K,V>
      */
     @SuppressWarnings("unchecked")
     final int compare(Object k1, Object k2) {
+        //如果比较器为空Comparator==null，即没有对比较器进行初始化；那么使用k1默认的比较器与k2进行比较
         return comparator==null ? ((Comparable<? super K>)k1).compareTo((K)k2)
             : comparator.compare((K)k1, (K)k2);
     }

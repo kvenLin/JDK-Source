@@ -12,10 +12,10 @@ jdk源码学习
 * [ArrayList](#arraylist(非线程安全))
 * [Vector](#vector(线程安全))
 * [LinkedList](#linkedlist(非线程安全))
-* [HashMap](#hashmap(非线程安全))
+* [HashMap_jdk1.8](#hashmap_jdk1.8(非线程安全))
     * [put和get方法分析](#put和get方法)
     * [HashMap引出的求余%和与运算&转换问题](#HashMap引出的求余%和与运算&转换问题)
-    * [HahMap线程不安全出现的死循环问题](#HahMap线程不安全出现的死循环问题)
+    * [HahMap中线程不安全问题](#hashmap中线程不安全问题)
 * [Hashtable](#hashtable(线程安全))
 * [LinkedHashMap](#linkedhashmap(非线程安全))
 * [HashSet](#hashset(非线程安全))
@@ -30,7 +30,7 @@ jdk源码学习
 * [AQS简析](#aqs简析)
     * [主要流程](#主要流程)
 * [synchronized 和 ReentrantLock](#synchronized-和-reentrantlock)
-    * [synchronized原理浅析md文档](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/Synchronized/synchronized.md)
+    * [synchronized原理浅析md文档](../Test/src/Synchronized/synchronized.md)
     * [ReentrantLock](#reentrantlock)
     * [synchronized和ReentrantLock异同](#synchronized和reentrantlock异同)
 * [类加载源码分析](#类加载源码分析)
@@ -39,7 +39,7 @@ jdk源码学习
     * [类加载总结](#类加载总结)
 * [IO流](#IO流)
 * [序列化](#序列化)
-* [反射学习.md](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/Reflection/总结反射.md)
+* [反射学习.md](../Test/src/Reflection/总结反射.md)
 
 ## 如何进行源码的阅读?
 ### 对于源码阅读顺序
@@ -52,9 +52,11 @@ jdk源码学习
 这里分享一下自己阅读的经验,我使用的是intellij
 * 学会使用bookmarks,用于标记阅读源码的位置便于下一次继续进行阅读
     * bookmarks标记: ctrl + 单击鼠标左键
-    ![bookmark标记](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_002.png)
+    
+    ![bookmark标记](../Test/src/image/选区_002.png)
     * 查看标记内容: Shift + F11
-    ![查看标记内容](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/选区_003.png)
+    
+    ![查看标记内容](../Test/src/image/选区_003.png)
     * [参考博客](https://blog.csdn.net/qq_36376059/article/details/80277767)
 * **学会进行写注释**,可以结合博客和自己的理解然后进行分析写注释
 ## String
@@ -65,15 +67,15 @@ jdk源码学习
     * 如果没有会将当前的字符串引用(jdk1.7之后)放入常量池(如果是jdk1.7之前会直接复制到常量池),然后返回
 * 字符串对象的+号运算,会在堆内存中生成新的字符串对象
 ### 常考面试题
-* question1:[结合代码理解](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/ConstantPoolTest.java)
+* question1:[结合代码理解](../JVM-Learning/src/com/ConstantPoolTest.java)
     * String s1 = "abc"; 
       String s2 = "abc";
       String s3 = new String("abc");
        问有几个实例对象?
     >答: 两个对象,堆中一个"abc",常量池一个"abc"
     * [参考博客](https://blog.csdn.net/Mypromise_TFS/article/details/81504137)
-* question2:[这段代码运行结果是什么](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/String/StringTest.java)
-    * 分析: ![String实例创建流程](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/选区_044.png)
+* question2:[这段代码运行结果是什么](../Test/src/String/StringTest.java)
+    * 分析: ![String实例创建流程](../Test/src/image/选区_044.png)
 ## 整型缓存
 * 包括:
     * Integer(-128 --- +127)
@@ -84,7 +86,7 @@ jdk源码学习
 * 缓存机制,结合源码查看
     * 缓存内容: 存在一个cache[]数组中
     * 类加载时通过静态代码块进行初始化
-* [运行示例分析](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/IntegerTest/IntegerDemo.java)
+* [运行示例分析](../Test/src/IntegerTest/IntegerDemo.java)
 
 ## 重载
 * 方法名相同,参数不同
@@ -97,7 +99,7 @@ jdk源码学习
     那么调用的就是子类中重写的方法,因为运行时类型一定是子类的类型,
     引用子类的那个类型可以是父类类型
 ## 集合完整图谱
-![集合图谱](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/image/20160124221843905.png)
+![集合图谱](../Test/src/image/20160124221843905.png)
     
 ## ArrayList(非线程安全)
 * 实现了 RandomAccess 接口,标识着这个类可以快速随机访问
@@ -116,8 +118,8 @@ jdk源码学习
     * toString方法底层使用Arrays.copyOf()
     * add()或remove()使用的是System.arraycopy()
     * 实质:copyOf()底层还是由arraycopy()实现
-    * [copyOf()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
-    * [arraycopy()使用示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ArraycopyAndCopyOf/ArraycopyTest.java)
+    * [copyOf()使用示例](../Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
+    * [arraycopy()使用示例](../Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
 ## Vector(线程安全)
 * 出构造发方法以外的所有方法都是synchronized同步的
 * 区别于ArrayList： ArrayList不是同步的,所以在不需要保证线程安全时时建议使用ArrayList
@@ -126,9 +128,9 @@ jdk源码学习
 * 初始大小为0
 * 实现了 List接口,Deque接口的双端链表
 
-## HashMap(非线程安全)
+## HashMap_jdk1.8(非线程安全)
 
-![结构视图](https://camo.githubusercontent.com/eec1c575aa5ff57906dd9c9130ec7a82e212c96a/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f332f32302f313632343064626363333033643837323f773d33343826683d34323726663d706e6726733d3130393931)
+![结构视图](../Test/src/image/HashMap_1.8.png)
 
 * 默认初始table使用的是Map.Entry<K,V>[]实现**链表结构**进行存储
 * 转换临界值:TREEIFY_THRESHOLD = 8;**链表长度 >= 8时进行转换**,转换成**红黑树**结构
@@ -156,19 +158,23 @@ jdk源码学习
 * 当n = 2的x次幂时,满足转换条件,**(n - 1) & hash 等价于 hash % n**
 * [参考博客](https://www.cnblogs.com/ysocean/p/9054804.html)
 
-### HahMap线程不安全出现的死循环问题
+### HashMap中线程不安全问题
+* 扩容导致的链表死循环问题:
+    * 注:**这个问题只存在1.7中,1.8已经不存在死循环问题**,因为在jdk1.7中使用的**头插法**,而jdk1.8使用的是**尾插法**
+* 数据覆盖问题:即多个线程添加元素时的 ++size 操作,不是原子操作,可能会出现多次添加操作后size只加了一次
 * put流程:
 
-![HashMap进行put流程](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/HashMap_put.png)
+![HashMap进行put流程](../Test/src/image/HashMap_put.png)
 
 * 多线程操作时主要存在线程安全的方法是: resize()
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
-* [为什么HashMap存在死循环问题?](https://blog.csdn.net/bjwfm2011/article/details/81076736)
+* [为什么HashMap1.7存在死循环问题?](https://blog.csdn.net/bjwfm2011/article/details/81076736)
 
 ## Hashtable(线程安全)
 * 线程安全,大多数方法采用了synchronized进行同步处理
 * 设置默认的**初始容量为11,负载因子为0.75**
-* ![图示](https://camo.githubusercontent.com/b8e66016373bb109e923205857aeee9689baac9e/687474703a2f2f6d792d626c6f672d746f2d7573652e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f31382d382d32322f35303635363638312e6a7067)
+
+![图示](../Test/src/image/Hashtable.png)
 
 ## LinkedHashMap(非线程安全)
 * 继承HashMap

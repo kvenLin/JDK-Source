@@ -661,7 +661,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             n = (tab = resize()).length;
         //判断数组当前索引没有元素,则直接添加新节点
         if ((p = tab[i = (n - 1) & hash]) == null)//当n为2的次方数时(扩容时必须已经考虑到这个条件),满足(n - 1) & hash 等价于 hash % n,这里采用&运算性能更高
-            tab[i] = newNode(hash, key, value, null);
+            tab[i] = newNode(hash, key, value, null);//没有产生hash碰撞的情况下直接插入
         else {
             //若当索引处有节点元素
             Node<K,V> e; K k;
@@ -778,6 +778,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                         Node<K,V> next;
                         do {
                             next = e.next;
+                            //这个地方很巧秒，通过e.hash & oldCap来得出newTab中的位置
+                            //因为table是2倍扩容，所以只需要看hash值与oldCap进行操作，结果为0，那么还是原来的index；否则index = index + oldCap
                             if ((e.hash & oldCap) == 0) {//判断倒数第五位是否为0
                                 if (loTail == null)
                                     loHead = e;
@@ -1848,9 +1850,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     // Tree bins
 
     /**
-     * Entry for Tree bins. Extends LinkedHashMap.Entry (which in turn
-     * extends Node) so can be used as extension of either regular or
-     * linked node.
+     * 这里继承了LinkedHashMap的Entry结构,
      */
     static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
         TreeNode<K,V> parent;  // red-black tree links, 红黑树结构
@@ -1874,27 +1874,33 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         /**
-         * Ensures that the given root is the first node of its bin.
+         * moveRootToFront这个方法的作用是确保根结点被保存在了table数组上面，
+         * 如果不是的话，就将root从链表中取出，将他放到数组对应的位置上，
+         * 原本在数组上的结点链接到root的后面。
+         *
+         * 这里最后调用了断言方法checkInvariants，
+         * 作用是递归检查整棵树是否符合红黑树的性质，
+         * 若检查不符会返回false导致moveRootToFront抛出错误。
          */
         static <K,V> void moveRootToFront(Node<K,V>[] tab, TreeNode<K,V> root) {
             int n;
             if (root != null && tab != null && (n = tab.length) > 0) {
-                int index = (n - 1) & root.hash;
+                int index = (n - 1) & root.hash;//根据root的hash值快速定位下标
                 TreeNode<K,V> first = (TreeNode<K,V>)tab[index];
-                if (root != first) {
+                if (root != first) {//如果root不是第一个节点
                     Node<K,V> rn;
-                    tab[index] = root;
-                    TreeNode<K,V> rp = root.prev;
-                    if ((rn = root.next) != null)
-                        ((TreeNode<K,V>)rn).prev = rp;
+                    tab[index] = root;//将root放入table[index]位置
+                    TreeNode<K,V> rp = root.prev;//root的前驱节点rp
+                    if ((rn = root.next) != null)//如果root的后继节点rn不为null
+                        ((TreeNode<K,V>)rn).prev = rp;//rn的前指针指向root的前驱节点rp
                     if (rp != null)
-                        rp.next = rn;
+                        rp.next = rn;//rp的后指针指向root的后继节点
                     if (first != null)
-                        first.prev = root;
-                    root.next = first;
+                        first.prev = root;//将原本的first放到root后面
+                    root.next = first;//root的后指针指向first
                     root.prev = null;
                 }
-                assert checkInvariants(root);
+                assert checkInvariants(root);//assert后面表达式为false时抛出异常
             }
         }
 
@@ -2418,6 +2424,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
         /**
          * Recursive invariant check
+         * 从root开始递归检查红黑树的性质，仅在检查root是否落在table上时调用
          */
         static <K,V> boolean checkInvariants(TreeNode<K,V> t) {
             TreeNode<K,V> tp = t.parent, tl = t.left, tr = t.right,
