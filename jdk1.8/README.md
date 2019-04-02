@@ -191,7 +191,7 @@ jdk源码学习
 * **默认Segment有16个**，也就是说可以**支持16个线程的并发**，在初始化是可以进行设置，一旦初始化就无法修改（**Segment不可扩容**），但是Segment内部的**Entry数组是可扩容的**。
 * 1.7时结构: 
 
-![1.7时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/ConcurrentHashMap1.7.png)
+![1.7时](../Test/src/image/ConcurrentHashMap1.7.png)
 
 ### 1.8版本
 * **摒弃了分段锁的概念，启用 node + CAS + Synchronized 代替Segment**
@@ -201,7 +201,7 @@ jdk源码学习
 * **默认sizeCtl = 16，初始化时可以进行设置**
 * 1.8时结构: 
 
-![1.8时](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/ConcurrentHashMap1.8.png)
+![1.8时](../Test/src/image/ConcurrentHashMap1.8.png)
 ### 1.8核心源码解析
 * put方法：
 ```
@@ -277,7 +277,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ```
 * 流程图：
 
-![ConcurrentHashMap流程图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/Test/src/image/ConcurrentHashMap1.8_put.png)
+![ConcurrentHashMap流程图](../Test/src/image/ConcurrentHashMap1.8_put.png)
 
 ## ThreadLocal
 * 一般叫做线程本地变量
@@ -307,7 +307,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     * 存在则**传入this**,进行移除对应的键值对
 * protected T initialValue()
     * 默认初始的ThreadLocal返回的value为null,一般会对该方法进行重写
-* [ThreadLocalDemo示例](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/ThreadLocal/ThreadLocalDemo.java)
+* [ThreadLocalDemo示例](../Test/src/Thread/ThreadLocal/ThreadLocalDemo.java)
 ### 关于为什么ThreadLocal中的Entry申明为弱引用?
 [参考博客](https://www.cnblogs.com/waterystone/p/6612202.html)
 ### 相关问题
@@ -325,7 +325,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 * acquireQueued()使线程在等待队列中休息，有机会时（轮到自己，会被unpark()）会去尝试获取资源。获取到资源后才返回。如果在整个等待过程中被中断过，则返回true，否则返回false。
 * 如果线程在等待过程中被中断过，它是不响应的。只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。
 
-![流程图示](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/AQS.png)
+![流程图示](../Test/src/image/AQS.png)
 
 ## synchronized 和 ReentrantLock
 ### ReentrantLock
@@ -407,7 +407,7 @@ protected Class<?> loadClass(String name, boolean resolve)
     }
 ```
 ### 类加载流程图
-![类加载流程](https://raw.githubusercontent.com/kvenLin/JDK-source/master/Test/src/image/ClassLoader.png)
+![类加载流程](../Test/src/image/ClassLoader.png)
 ### 类加载总结
 >类加载时首先会去判断是否存在父类，如果父类存在则交给父类进行加载，依次向上找顶层；
 如果父类无法加载就或加载异常，就向下交给子类进行加载。
@@ -432,4 +432,4 @@ protected Class<?> loadClass(String name, boolean resolve)
 * 变成数字后,用IO流读写
     * 字节流
 * 反序列化: 就是把二进制数据还原成各种各样的数据格式的过程
-* [测试demo](https://github.com/kvenLin/JDK-Source/blob/master/Test/src/SerializationTest/)
+* [测试demo](../Test/src/SerializationTest/)
