@@ -432,4 +432,4 @@ protected Class<?> loadClass(String name, boolean resolve)
 * 变成数字后,用IO流读写
     * 字节流
 * 反序列化: 就是把二进制数据还原成各种各样的数据格式的过程
-* [测试demo](../Test/src/SerializationTest/)
+* [测试demo](../Test/src/SerializationTest)

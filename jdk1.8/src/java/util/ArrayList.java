@@ -276,7 +276,7 @@ public class ArrayList<E> extends AbstractList<E>
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             //进入hugeCapacity方法,对MAX_ARRAY_SIZE 和 minCapacity进行比较
             newCapacity = hugeCapacity(minCapacity);
-        // minCapacity is usually close to size, so this is a win:
+        //使用Arrays.copyOf()方法创建一个newCapacity容量的数组并将旧的elementData复制到这个数组，最后再使用elementData再次引用这个新的数组
         elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
