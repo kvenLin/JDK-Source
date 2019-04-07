@@ -16,6 +16,7 @@ jdk源码学习
     * [put和get方法分析](#put和get方法)
     * [HashMap引出的求余%和与运算&转换问题](#HashMap引出的求余%和与运算&转换问题)
     * [HahMap中线程不安全问题](#hashmap中线程不安全问题)
+* [TreeMap](#treemap(非线程安全))
 * [Hashtable](#hashtable(线程安全))
 * [LinkedHashMap](#linkedhashmap(非线程安全))
 * [HashSet](#hashset(非线程安全))
@@ -169,6 +170,13 @@ jdk源码学习
 * 多线程操作时主要存在线程安全的方法是: resize()
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
 * [为什么HashMap1.7存在死循环问题?](https://blog.csdn.net/bjwfm2011/article/details/81076736)
+
+## TreeMap(非线程安全)
+* 底层使用的**红黑树**,时间复杂度是O(logN)
+* key不能为null,为null时会抛出NullPointException
+* 想要自定义比较器,可以在构造方法中传入指定的Comparator对象,否则使用key默认的比较器来进行比较
+* TreeMap非同步的,想要同步可以使用Collections来进行封装
+* [具体源码分析](src/java/util/TreeMap.java)
 
 ## Hashtable(线程安全)
 * 线程安全,大多数方法采用了synchronized进行同步处理

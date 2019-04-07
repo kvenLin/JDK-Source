@@ -121,17 +121,17 @@ public class TreeMap<K,V>
     //TreeMap实例时必须设置一个比较器，这样TreeMap才能在插入时进行排序处理
     private final Comparator<? super K> comparator;
 
-    private transient Entry<K,V> root;
+    private transient Entry<K,V> root;//根节点
 
     /**
      * The number of entries in the tree
      */
-    private transient int size = 0;
+    private transient int size = 0;//红黑树的大小
 
     /**
      * The number of structural modifications to the tree.
      */
-    private transient int modCount = 0;
+    private transient int modCount = 0;//修改次数
 
     /**
      * Constructs a new, empty tree map, using the natural ordering of its
@@ -344,22 +344,25 @@ public class TreeMap<K,V>
     final Entry<K,V> getEntry(Object key) {
         // Offload comparator-based version for sake of performance
         if (comparator != null)
+            //如果comparator不为null则使用内部设置好的comparator，并返回key对应的entry
             return getEntryUsingComparator(key);
         if (key == null)
             throw new NullPointerException();
+        //key不为null则使用key默认的比较器
         @SuppressWarnings("unchecked")
             Comparable<? super K> k = (Comparable<? super K>) key;
         Entry<K,V> p = root;
         while (p != null) {
+            //节点不为null，则使用compareTo()进行key的比较
             int cmp = k.compareTo(p.key);
             if (cmp < 0)
                 p = p.left;
             else if (cmp > 0)
                 p = p.right;
             else
-                return p;
+                return p;//找到相等的key返回对应的entry
         }
-        return null;
+        return null;//不存在返回null
     }
 
     /**
@@ -371,9 +374,10 @@ public class TreeMap<K,V>
     final Entry<K,V> getEntryUsingComparator(Object key) {
         @SuppressWarnings("unchecked")
             K k = (K) key;
-        Comparator<? super K> cpr = comparator;
+        Comparator<? super K> cpr = comparator;//使用设置好的比较器
         if (cpr != null) {
             Entry<K,V> p = root;
+            //遍历进行寻找目标key的entry
             while (p != null) {
                 int cmp = cpr.compare(k, p.key);
                 if (cmp < 0)
@@ -381,10 +385,10 @@ public class TreeMap<K,V>
                 else if (cmp > 0)
                     p = p.right;
                 else
-                    return p;
+                    return p;//找到相等的key就返回对应的entry
             }
         }
-        return null;
+        return null;//未找到返回null
     }
 
     /**
@@ -540,9 +544,9 @@ public class TreeMap<K,V>
         //若根节点为null，则直接插入
         if (t == null) {
             //这里很巧妙，如果实现了comparator，那么key是可以为null的，否则会抛出NullPointerException
-            compare(key, key); // type (and possibly null) check
+            compare(key, key); //即检查key是否是为null
             //设为root节点
-            root = new Entry<>(key, value, null);
+            root = new Entry<>(key, value, null);//新建一个根节点
             size = 1;
             modCount++;
             return null;
@@ -551,7 +555,7 @@ public class TreeMap<K,V>
         Entry<K,V> parent;
         // split comparator and comparable paths
         Comparator<? super K> cpr = comparator;
-        if (cpr != null) {
+        if (cpr != null) {//比较器不为空
             do {
                 parent = t;
                 cmp = cpr.compare(key, t.key);
@@ -561,13 +565,13 @@ public class TreeMap<K,V>
                     t = t.right;
                 else
                     return t.setValue(value);
-            } while (t != null);
+            } while (t != null);//找到合适的位置进行插入
         }
-        else {
-            if (key == null)
+        else {//比较器为null的情况，则使用key作为比较器进行比较，并且key必须实现Comparable接口
+            if (key == null)//检查key是否为null
                 throw new NullPointerException();
             @SuppressWarnings("unchecked")
-                Comparable<? super K> k = (Comparable<? super K>) key;
+                Comparable<? super K> k = (Comparable<? super K>) key;//使用key的比较器
             do {
                 parent = t;
                 cmp = k.compareTo(t.key);
@@ -577,14 +581,14 @@ public class TreeMap<K,V>
                     t = t.right;
                 else
                     return t.setValue(value);
-            } while (t != null);
+            } while (t != null);//找到合适的位置进行插入
         }
-        Entry<K,V> e = new Entry<>(key, value, parent);
+        Entry<K,V> e = new Entry<>(key, value, parent);//创建新节点，找到父节点的位置
         if (cmp < 0)
             parent.left = e;
         else
             parent.right = e;
-        fixAfterInsertion(e);
+        fixAfterInsertion(e);//调整红黑树，使得红黑树平衡
         size++;
         modCount++;
         return null;
@@ -605,13 +609,15 @@ public class TreeMap<K,V>
      *         does not permit null keys
      */
     public V remove(Object key) {
+        //找到对应key的entry
         Entry<K,V> p = getEntry(key);
         if (p == null)
+            //如果不存在则直接返回null
             return null;
 
-        V oldValue = p.value;
-        deleteEntry(p);
-        return oldValue;
+        V oldValue = p.value;//记录删除节点的value值
+        deleteEntry(p);//删除这个节点
+        return oldValue;//返回旧的value值
     }
 
     /**
@@ -2058,7 +2064,7 @@ public class TreeMap<K,V>
         Entry<K,V> left;
         Entry<K,V> right;
         Entry<K,V> parent;
-        boolean color = BLACK;
+        boolean color = BLACK;//默认是黑色节点
 
         /**
          * Make a new cell with given key, value, and parent, and with
@@ -2257,7 +2263,7 @@ public class TreeMap<K,V>
 
     /** From CLR */
     private void fixAfterInsertion(Entry<K,V> x) {
-        x.color = RED;
+        x.color = RED;//设置新加入的节点初始颜色为红色
 
         while (x != null && x != root && x.parent.color == RED) {
             if (parentOf(x) == leftOf(parentOf(parentOf(x)))) {
