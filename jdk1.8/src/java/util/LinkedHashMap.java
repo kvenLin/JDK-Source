@@ -215,7 +215,7 @@ public class LinkedHashMap<K,V>
      *
      * @serial
      */
-    final boolean accessOrder;
+    final boolean accessOrder;//迭代的时候所用到的顺序,如果为false,则按照插入的顺序
 
     // internal utilities
 
@@ -296,6 +296,10 @@ public class LinkedHashMap<K,V>
             a.before = b;
     }
 
+    /**
+     * evict为true时删除双向链表的头节点
+     * @param evict
+     */
     void afterNodeInsertion(boolean evict) { // possibly remove eldest
         LinkedHashMap.Entry<K,V> first;
         if (evict && (first = head) != null && removeEldestEntry(first)) {
@@ -303,7 +307,11 @@ public class LinkedHashMap<K,V>
             removeNode(hash(key), key, null, false, true);
         }
     }
-
+    /**
+     * 将当前节点e移动到双向链表的尾部.
+     * 每次LinkedHahMap中元素被访问时,就会按照访问先后来排序,先访问的双向链表中靠前,越后访问的越接近尾部
+     * 只有当accessOrder为true时,才会执行这个操作
+     */
     void afterNodeAccess(Node<K,V> e) { // move node to last
         LinkedHashMap.Entry<K,V> last;
         if (accessOrder && (last = tail) != e) {
@@ -345,6 +353,7 @@ public class LinkedHashMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
+    //设置初始容量和加载因子的构造器
     public LinkedHashMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
         accessOrder = false;
@@ -357,6 +366,7 @@ public class LinkedHashMap<K,V>
      * @param  initialCapacity the initial capacity
      * @throws IllegalArgumentException if the initial capacity is negative
      */
+    //只设置初始容量的构造器
     public LinkedHashMap(int initialCapacity) {
         super(initialCapacity);
         accessOrder = false;
@@ -366,6 +376,7 @@ public class LinkedHashMap<K,V>
      * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance
      * with the default initial capacity (16) and load factor (0.75).
      */
+    //默认的空参构造器,使用HashMap中默认容量为16,负载因子为0.75
     public LinkedHashMap() {
         super();
         accessOrder = false;
@@ -380,6 +391,7 @@ public class LinkedHashMap<K,V>
      * @param  m the map whose mappings are to be placed in this map
      * @throws NullPointerException if the specified map is null
      */
+    //使用现有的map来构造LinkedHaspMap
     public LinkedHashMap(Map<? extends K, ? extends V> m) {
         super();
         accessOrder = false;
@@ -396,6 +408,11 @@ public class LinkedHashMap<K,V>
      *         access-order, <tt>false</tt> for insertion-order
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
+     */
+    /**
+     * 设定迭代顺序的构造器
+     * 1.accessOrder若为false,遍历双向链表时,是按照插入顺序排序的
+     * 2.accessOrder若为true,表示双向链表中的元素按照访问的先后顺序排序,最先遍历(链表头)的是最近最少使用的元素
      */
     public LinkedHashMap(int initialCapacity,
                          float loadFactor,

@@ -76,7 +76,7 @@
 * 栈帧,具体结构解析: [运行时栈帧结构](#运行时栈帧结构)
     * 每个方法都会创建一个栈帧,伴随着方法从创建到执行完成.
     * 用于存放: **局部变量表,操作数栈,动态链接,方法出口**等
-    * ![栈帧结构](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_037.png)
+    * ![栈帧结构](src/image/选区_037.png)
 * 局部变量表
     * 存放编译期可知的各种基本的数据类型,引用类型,returnAddress类型
     * 局部变量表的内存空间在编译期完成分配;
@@ -117,7 +117,7 @@
 * [关于常量池所处位置](https://blog.csdn.net/wanderlustLee/article/details/80762851)
 * 创建对象时存放
 * StringTable(可以想象成HashSet): 避免创建对象的重复
-* [结合代码示例理解heap和运行时常量池](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/ConstantPoolTest.java)
+* [结合代码示例理解heap和运行时常量池](src/com/ConstantPoolTest.java)
 
 ## 对象相关
 ### 对象的结构
@@ -134,7 +134,7 @@
 * Padding(对齐填充)
 
 ### 对象的创建
-![对象的创建流程](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_027.png)
+![对象的创建流程](src/image/选区_027.png)
 
 * 给对象分配内存
 * 线程安全性问题
@@ -159,13 +159,13 @@
     * 线程同步: 效率降低
     * 本地线程分配缓冲TLAB(Thread Local Allocation Buffer)
     
-![本地线程分配缓冲](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_028.png)
+![本地线程分配缓冲](src/image/选区_028.png)
 
 ### 对象的访问定位
 * 使用句柄
 * 直接指针(hotspot)
 
-![对象访问定位方式](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_030.png)
+![对象访问定位方式](src/image/选区_030.png)
 
 ----------------
 
@@ -176,10 +176,10 @@
 ### 如何判定对象为垃圾对象
 * 引用计数法
     * 在对象中添加一个引用计数器,当有地方引用这个对象的时候引用计数器的值就+1,在引用失效的时候,计数器的值就-1
-    * ![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_031.png)
+    * ![概念图](src/image/选区_031.png)
 * 可达性分析法
-    * ![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_032.png)
-* [测试对内存对象内部相互引用的回收](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/GCTest/GCMain.java)
+    * ![概念图](src/image/选区_032.png)
+* [测试对内存对象内部相互引用的回收](src/com/GCTest/GCMain.java)
 * 可以作为GCRoot的对象
     * 虚拟机栈的局部变量表
     * 方法区的类属性所**引用的对象**
@@ -191,7 +191,7 @@
         * 标记和清除过程都相对较慢,效率不是特别高
         * 空间问题:清除后得到的不连续空间影响后续的分配,当分配空间找不到时又会触发一次垃圾回收
     * 复制算法(适用于新生代内存)
-        * ![复制清除算法实现垃圾回收](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_033.png)
+        * ![复制清除算法实现垃圾回收](src/image/选区_033.png)
     * 标记-整理算法(适用于老年代进行回收)
     * 分代收集算法(标记-整理和复制算法的结合)
         * 针对不同的内存区域(新生代,老年代)选择不同的回收算法
@@ -248,9 +248,9 @@
     * -XX:SurvivorRatio=8 指定Eden区内存为8M
     * -XX:PretenureSizeThreshold=6M 大对象判定阀值为6M
 * 内存分配测试:
-    * [创建对象内存分配和分配器使用分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryAllocationTest1.java)
-    * [关于Eden区内存分配的分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryAllocationTest2.java)
-    * [关于大对象判定分析](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/MemoryTest/MemoryAllocationTest3.java)
+    * [创建对象内存分配和分配器使用分析](src/com/MemoryTest/MemoryAllocationTest1.java)
+    * [关于Eden区内存分配的分析](src/com/MemoryTest/MemoryAllocationTest2.java)
+    * [关于大对象判定分析](src/com/MemoryTest/MemoryAllocationTest3.java)
 
 ### 空间分配担保
 * 参数:
@@ -259,7 +259,7 @@
 * 对于没有逃逸的对象只会在栈上分配
 * 对象的大小其实在运行时也是确定的,因此即使出现了栈上内存分配,也不会导致栈帧改变大小
 * 逃逸分析:
-    * [分析对象的作用域](https://github.com/kvenLin/JDK-Source/blob/master/JVM-Learning/src/com/StackTest/StackAllocation.java)
+    * [分析对象的作用域](src/com/StackTest/StackAllocation.java)
 ## JVM常用工具和主要参数
 * [使用教程参考博客](https://blog.csdn.net/wyy101301/article/details/80481630)
 ### jps
@@ -298,11 +298,11 @@
 * [结构分析](https://blog.csdn.net/sinat_38259539/article/details/78248454)
 ### 设计理念和意义
 
-![概念图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_035.png)
+![概念图](src/image/选区_035.png)
 
 ## 类加载
 加载流程:
-![加载流程图](https://raw.githubusercontent.com/kvenLin/JDK-Source/master/JVM-Learning/src/image/选区_036.png)
+![加载流程图](src/image/选区_036.png)
 ### 类加载机制
 * 概述:
 > 虚拟机把描述类的数据从Class文件加载到内存,并对数据进行校验,解析和初始化,
@@ -312,13 +312,13 @@
 ### 类加载的时机
 * 当初始化一个类时,如果发现其父类还没有进行过初始化,则需要先触发其父类的初始化
 * 当虚拟机启动时,用户需要指定一个执行的主类(包含main()方法的那个类),虚拟机会先初始化这个主类
-* [运行实例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/ClassLoad/test1/Child.java)
+* [运行实例](src/com/ClassLoad/test1/Child.java)
 
 #### 不会被初始化的例子
 * 通过子类引用父类的静态字段,子类不会被初始化,只会初始化父类
 * **通过数组定义来引用类**
 * 调用类的常量
-* [运行实例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/ClassLoad/test2)
+* [运行实例](src/com/ClassLoad/test2)
 
 ### 加载
 * 通过一个类的全限定名来获取定义此类的二进制流
@@ -361,11 +361,11 @@ char '0';
 ### 初始化
 * 类加载的最后一步
 * 初始化是执行<clinit\>()方法的过程
-    * [初始化示例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/ClassLoad/test3/InitTest1.java)
+    * [初始化示例](src/com/ClassLoad/test3/InitTest1.java)
 > <init\>()是初始化实例对象的,<clinit\>()是初始化类或者接口的
 ### 双亲委派模型
 * 实际就是子类加载器加载时会先扔给父类进行加载,如果父类加载不了抛出异常后,再交给子类进行加载
-* [对ClassLoader.java的loadClass()加载流程进行分析](https://github.com/kvenLin/JDK-Source/blob/master/jdk1.8/src/java/lang/ClassLoader.java),第403行
+* [对ClassLoader.java的loadClass()加载流程进行分析](../jdk1.8/src/java/lang/ClassLoader.java),第403行
 
 ## 虚拟机字节码执行引擎
 ### 运行时栈帧结构
@@ -376,7 +376,7 @@ char '0';
     * Java中的long和double类型是64位,占用两个Slot
 * 操作数栈
     * 对于byte,short以及char类型值在眼入到操作数栈之前,也会被转换成int
-    * [操作数栈指令执行流程](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/JavacTest/)
+    * [操作数栈指令执行流程](src/com/JavacTest)
 * 动态链接
     * 实际就是一个解析找到调用方法的引用
 * 方法的返回地址
@@ -387,10 +387,10 @@ char '0';
 ### 方法调用 
 * 解析调用
     * 在编译阶段就进行了确定调用的方法称为解析调用
-    * [测试用例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/MethodInvokeTest/test1/)
+    * [测试用例](src/com/MethodInvokeTest/test1)
 * 分派调用
     * 在运行期间才能确定调用的方法就是分派调用
     * 静态分派代用
-        * [测试用例](https://github.com/kvenLin/JDK-Source/tree/master/JVM-Learning/src/com/MethodInvokeTest/test2/)
+        * [测试用例](src/com/MethodInvokeTest/test2)
     * 动态分派调用
         * 方法的重写即动态分派调用

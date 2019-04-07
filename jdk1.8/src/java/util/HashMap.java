@@ -709,7 +709,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         ++modCount;
         if (++size > threshold)
             resize();
-        afterNodeInsertion(evict);
+        afterNodeInsertion(evict);//如果该方法被LinkedHashMap实现了则会进行元素的顺序维护,evict = true
         return null;
     }
 
