@@ -282,17 +282,24 @@ public class LinkedHashMap<K,V>
         return t;
     }
 
+    //在删除节点e时,同步将e从双向链表上删除
     void afterNodeRemoval(Node<K,V> e) { // unlink
         LinkedHashMap.Entry<K,V> p =
             (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+        //待删除节点 p 的前置后置节点都置空
         p.before = p.after = null;
+        //如果前置节点是null,则现在的头结点应该是后置节点a
         if (b == null)
             head = a;
-        else
+        else {
+            //否则将前置节点b的后置节点指向a
             b.after = a;
+        }
+        //同理如果后置节点时null,则尾节点应是b
         if (a == null)
             tail = b;
         else
+            //否则更新后置节点a的前置节点为b
             a.before = b;
     }
 
@@ -310,10 +317,11 @@ public class LinkedHashMap<K,V>
     /**
      * 将当前节点e移动到双向链表的尾部.
      * 每次LinkedHahMap中元素被访问时,就会按照访问先后来排序,先访问的双向链表中靠前,越后访问的越接近尾部
-     * 只有当accessOrder为true时,才会执行这个操作
+     * 注意: 只有当accessOrder为true时,才会执行这个操作
      */
     void afterNodeAccess(Node<K,V> e) { // move node to last
         LinkedHashMap.Entry<K,V> last;
+        //如果accessOrder 是true ，且原尾节点不等于e
         if (accessOrder && (last = tail) != e) {
             LinkedHashMap.Entry<K,V> p =
                 (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;

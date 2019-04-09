@@ -122,8 +122,8 @@ jdk源码学习
     * [copyOf()使用示例](../Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
     * [arraycopy()使用示例](../Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
 ## Vector(线程安全)
-* 出构造发方法以外的所有方法都是synchronized同步的
-* 区别于ArrayList： ArrayList不是同步的,所以在不需要保证线程安全时时建议使用ArrayList
+* 除了构造发方法以外的**所有方法都是synchronized同步的**
+* 区别于ArrayList： ArrayList不是同步的,所以**在不需要保证线程安全时时建议使用ArrayList**
 
 ## LinkedList(非线程安全)
 * 初始大小为0
@@ -185,8 +185,19 @@ jdk源码学习
 ![图示](../Test/src/image/Hashtable.png)
 
 ## LinkedHashMap(非线程安全)
-* 继承HashMap
-* 底层是双向链表
+* **继承HashMap**,即内部实际调用的还是HashMap的方法进行添加或删除
+* 底层是**双向链表**来维护节点顺序
+* 每次插入数据时会增加节点,访问或修改数据时会调整链表的节点顺序,从而决定迭代时输出的顺序
+    * accessOrder若为**false**(默认情况下为false),遍历双向链表时,是按照**插入顺序排序的**
+    * accessOrder若为**true**(需要通过下面的构造方法进行设置),表示双向链表中的元素按照**访问的先后顺序排序**,最先遍历(链表头)的是**最近最少使用的元素**
+```java_holder_method_tree
+    public LinkedHashMap(int initialCapacity,
+                         float loadFactor,
+                         boolean accessOrder) {
+        super(initialCapacity, loadFactor);
+        this.accessOrder = accessOrder;
+    }
+```
 
 ## HashSet(非线程安全)
 * 底层使用的是HashMap
@@ -195,7 +206,7 @@ jdk源码学习
 ### 1.7版本
 * 主要使用的是Segment分段锁
 * 内部拥有一个Entry数组，每个数组的每个元素又有一个链表
-* 同时Segment继承ReetrantLock来进行加锁
+* 同时Segment继承ReentrantLock来进行加锁
 * **默认Segment有16个**，也就是说可以**支持16个线程的并发**，在初始化是可以进行设置，一旦初始化就无法修改（**Segment不可扩容**），但是Segment内部的**Entry数组是可扩容的**。
 * 1.7时结构: 
 
