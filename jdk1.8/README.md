@@ -9,18 +9,18 @@ jdk源码学习
 * [整型缓存](#整型缓存)
 * [重载](#重载)
 * [集合完整图谱](#集合完整图谱)
-* [ArrayList](#arraylist(非线程安全))
-* [Vector](#vector(线程安全))
-* [LinkedList](#linkedlist(非线程安全))
-* [HashMap_jdk1.8](#hashmap_jdk1.8(非线程安全))
-    * [put和get方法分析](#put和get方法)
+* [ArrayList](#arraylist)
+* [Vector](#vector)
+* [LinkedList](#linkedlist)
+* [HashMap_jdk1.8](#hashmap_jdk18)
+    * [put和get方法分析](#putget)
     * [HashMap引出的求余%和与运算&转换问题](#HashMap引出的求余%和与运算&转换问题)
     * [HahMap中线程不安全问题](#hashmap中线程不安全问题)
-* [TreeMap](#treemap(非线程安全))
-* [Hashtable](#hashtable(线程安全))
-* [LinkedHashMap](#linkedhashmap(非线程安全))
-* [HashSet](#hashset(非线程安全))
-* [ConcurrentHashMap](#concurrenthashmap(线程安全))
+* [TreeMap](#treemap)
+* [Hashtable](#hashtable)
+* [LinkedHashMap](#linkedhashmap)
+* [HashSet](#hashset)
+* [ConcurrentHashMap](#concurrenthashmap)
     * [1.7版本](#1.7版本)
     * [1.8版本](#1.8版本)
     * [1.8核心源码解析](#1.8核心源码解析)
@@ -30,17 +30,17 @@ jdk源码学习
     * [相关问题](#相关问题)
 * [AQS简析](#aqs简析)
     * [主要流程](#主要流程)
-* [synchronized 和 ReentrantLock](#synchronized-和-reentrantlock)
-    * [synchronized原理浅析md文档](../Test/src/Synchronized/synchronized.md)
+* [synchronized 和 ReentrantLock](#synchronized--reentrantlock)
+    * [synchronized原理浅析md文档](../Test/src/main/java/Synchronized/synchronized.md)
     * [ReentrantLock](#reentrantlock)
-    * [synchronized和ReentrantLock异同](#synchronized和reentrantlock异同)
+    * [synchronized和ReentrantLock异同](#synchronizedreentrantlock)
 * [类加载源码分析](#类加载源码分析)
     * [核心源码解读](#核心源码解读)
     * [类加载流程图](#类加载流程图)
     * [类加载总结](#类加载总结)
 * [IO流](#IO流)
 * [序列化](#序列化)
-* [反射学习.md](../Test/src/Reflection/总结反射.md)
+* [反射学习.md](../Test/src/main/java/Reflection/总结反射.md)
 
 ## 如何进行源码的阅读?
 ### 对于源码阅读顺序
@@ -54,10 +54,10 @@ jdk源码学习
 * 学会使用bookmarks,用于标记阅读源码的位置便于下一次继续进行阅读
     * bookmarks标记: ctrl + 单击鼠标左键
     
-    ![bookmark标记](../Test/src/image/选区_002.png)
+    ![bookmark标记](../Test/src/main/java/image/选区_002.png)
     * 查看标记内容: Shift + F11
     
-    ![查看标记内容](../Test/src/image/选区_003.png)
+    ![查看标记内容](../Test/src/main/java/image/选区_003.png)
     * [参考博客](https://blog.csdn.net/qq_36376059/article/details/80277767)
 * **学会进行写注释**,可以结合博客和自己的理解然后进行分析写注释
 ## String
@@ -75,8 +75,8 @@ jdk源码学习
        问有几个实例对象?
     >答: 两个对象,堆中一个"abc",常量池一个"abc"
     * [参考博客](https://blog.csdn.net/Mypromise_TFS/article/details/81504137)
-* question2:[这段代码运行结果是什么](../Test/src/String/StringTest.java)
-    * 分析: ![String实例创建流程](../Test/src/image/选区_044.png)
+* question2:[这段代码运行结果是什么](../Test/src/main/java/String/StringTest.java)
+    * 分析: ![String实例创建流程](../Test/src/main/java/image/选区_044.png)
 ## 整型缓存
 * 包括:
     * Integer(-128 --- +127)
@@ -87,7 +87,7 @@ jdk源码学习
 * 缓存机制,结合源码查看
     * 缓存内容: 存在一个cache[]数组中
     * 类加载时通过静态代码块进行初始化
-* [运行示例分析](../Test/src/IntegerTest/IntegerDemo.java)
+* [运行示例分析](../Test/src/main/java/IntegerTest/IntegerDemo.java)
 
 ## 重载
 * 方法名相同,参数不同
@@ -100,7 +100,7 @@ jdk源码学习
     那么调用的就是子类中重写的方法,因为运行时类型一定是子类的类型,
     引用子类的那个类型可以是父类类型
 ## 集合完整图谱
-![集合图谱](../Test/src/image/20160124221843905.png)
+![集合图谱](../Test/src/main/java/image/20160124221843905.png)
     
 ## ArrayList(非线程安全)
 * 实现了 RandomAccess 接口,标识着这个类可以快速随机访问
@@ -119,8 +119,8 @@ jdk源码学习
     * toString方法底层使用Arrays.copyOf()
     * add()或remove()使用的是System.arraycopy()
     * 实质:copyOf()底层还是由arraycopy()实现
-    * [copyOf()使用示例](../Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
-    * [arraycopy()使用示例](../Test/src/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
+    * [copyOf()使用示例](../Test/src/main/java/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
+    * [arraycopy()使用示例](../Test/src/main/java/ArraycopyAndCopyOf/ArrayscopyOfTest.java)
 ## Vector(线程安全)
 * 除了构造发方法以外的**所有方法都是synchronized同步的**
 * 区别于ArrayList： ArrayList不是同步的,所以**在不需要保证线程安全时时建议使用ArrayList**
@@ -131,7 +131,7 @@ jdk源码学习
 
 ## HashMap_jdk1.8(非线程安全)
 
-![结构视图](../Test/src/image/HashMap_1.8.png)
+![结构视图](../Test/src/main/java/image/HashMap_1.8.png)
 
 * 默认初始table使用的是Map.Entry<K,V>[]实现**链表结构**进行存储
 * 转换临界值:TREEIFY_THRESHOLD = 8;**链表长度 >= 8时进行转换**,转换成**红黑树**结构
@@ -165,7 +165,7 @@ jdk源码学习
 * 数据覆盖问题:即多个线程添加元素时的 ++size 操作,不是原子操作,可能会出现多次添加操作后size只加了一次
 * put流程:
 
-![HashMap进行put流程](../Test/src/image/HashMap_put.png)
+![HashMap进行put流程](../Test/src/main/java/image/HashMap_put.png)
 
 * 多线程操作时主要存在线程安全的方法是: resize()
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
@@ -182,7 +182,7 @@ jdk源码学习
 * 线程安全,大多数方法采用了synchronized进行同步处理
 * 设置默认的**初始容量为11,负载因子为0.75**
 
-![图示](../Test/src/image/Hashtable.png)
+![图示](../Test/src/main/java/image/Hashtable.png)
 
 ## LinkedHashMap(非线程安全)
 * **继承HashMap**,即内部实际调用的还是HashMap的方法进行添加或删除
@@ -210,7 +210,7 @@ jdk源码学习
 * **默认Segment有16个**，也就是说可以**支持16个线程的并发**，在初始化是可以进行设置，一旦初始化就无法修改（**Segment不可扩容**），但是Segment内部的**Entry数组是可扩容的**。
 * 1.7时结构: 
 
-![1.7时](../Test/src/image/ConcurrentHashMap1.7.png)
+![1.7时](../Test/src/main/java/image/ConcurrentHashMap1.7.png)
 
 ### 1.8版本
 * **摒弃了分段锁的概念，启用 node + CAS + Synchronized 代替Segment**
@@ -220,7 +220,7 @@ jdk源码学习
 * **默认sizeCtl = 16，初始化时可以进行设置**
 * 1.8时结构: 
 
-![1.8时](../Test/src/image/ConcurrentHashMap1.8.png)
+![1.8时](../Test/src/main/java/image/ConcurrentHashMap1.8.png)
 ### 1.8核心源码解析
 * put方法：
 ```
@@ -296,7 +296,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ```
 * 流程图：
 
-![ConcurrentHashMap流程图](../Test/src/image/ConcurrentHashMap1.8_put.png)
+![ConcurrentHashMap流程图](../Test/src/main/java/image/ConcurrentHashMap1.8_put.png)
 
 ## ThreadLocal
 * 一般叫做线程本地变量
@@ -326,7 +326,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     * 存在则**传入this**,进行移除对应的键值对
 * protected T initialValue()
     * 默认初始的ThreadLocal返回的value为null,一般会对该方法进行重写
-* [ThreadLocalDemo示例](../Test/src/Thread/ThreadLocal/ThreadLocalDemo.java)
+* [ThreadLocalDemo示例](../Test/src/main/java/Thread/ThreadLocal/ThreadLocalDemo.java)
 ### 关于为什么ThreadLocal中的Entry申明为弱引用?
 [参考博客](https://www.cnblogs.com/waterystone/p/6612202.html)
 ### 相关问题
@@ -344,7 +344,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 * acquireQueued()使线程在等待队列中休息，有机会时（轮到自己，会被unpark()）会去尝试获取资源。获取到资源后才返回。如果在整个等待过程中被中断过，则返回true，否则返回false。
 * 如果线程在等待过程中被中断过，它是不响应的。只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。
 
-![流程图示](../Test/src/image/AQS.png)
+![流程图示](../Test/src/main/java/image/AQS.png)
 
 ## synchronized 和 ReentrantLock
 ### ReentrantLock
@@ -426,7 +426,7 @@ protected Class<?> loadClass(String name, boolean resolve)
     }
 ```
 ### 类加载流程图
-![类加载流程](../Test/src/image/ClassLoader.png)
+![类加载流程](../Test/src/main/java/image/ClassLoader.png)
 ### 类加载总结
 >类加载时首先会去判断是否存在父类，如果父类存在则交给父类进行加载，依次向上找顶层；
 如果父类无法加载就或加载异常，就向下交给子类进行加载。
@@ -451,4 +451,4 @@ protected Class<?> loadClass(String name, boolean resolve)
 * 变成数字后,用IO流读写
     * 字节流
 * 反序列化: 就是把二进制数据还原成各种各样的数据格式的过程
-* [测试demo](../Test/src/SerializationTest)
+* [测试demo](../Test/src/main/java/SerializationTest)
