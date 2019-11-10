@@ -27,5 +27,9 @@ public class Test1 {
         //lambda
         list.forEach(integer -> System.out.println(integer));
 
+        System.out.println("================================");
+
+        //method reference 方法引用
+        list.forEach(System.out::println);
     }
 }
