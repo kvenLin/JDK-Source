@@ -94,6 +94,7 @@ public interface Function<T, R> {
      * @param <T> the type of the input and output objects to the function
      * @return a function that always returns its input argument
      */
+    //1.8引入的接口中可以定义静态方法
     static <T> Function<T, T> identity() {
         return t -> t;
     }

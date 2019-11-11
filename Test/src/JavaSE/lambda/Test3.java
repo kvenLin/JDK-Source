@@ -4,6 +4,7 @@ import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @Author: clf
@@ -25,5 +26,8 @@ public class Test3 {
 
         //使用 stream + 方法引用
         list.stream().map(String::toUpperCase).forEach(item -> System.out.println(item));
+
+        Function<String, String> function = String::toUpperCase;
+        System.out.println(function.getClass().getInterfaces()[0]);
     }
 }

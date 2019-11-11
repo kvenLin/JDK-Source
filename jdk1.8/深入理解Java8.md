@@ -8,6 +8,12 @@ lambada表达式的基本结构:
     //执行体
 }
 ```
+* lambda表达式的完整语法是: (type1 arg1, type2 arg2) -> {body}
+* 如果参数只有一个,并且类型可以推断,圆括号可以省略: arg -> {body}
+* lambda主体可以包含零条或者多条语句
+* 如果lambda表达式的主体只有一条语句,{}可以省略.匿名函数的赶回类型与主题表达式一致:s -> System.out.println(s).
+* 如果lambda表达式的主体包含一条以上语句,表达式必须包含在{}中(形成代码块).匿名函数的返回类型与代码块的返回类型一致,若没有返回则为空.
+ 
 [使用示例](../Test/src/JavaSE/lambda/Test1.java)
 ### 关于函数式接口
 1. 如果一个结口只有一个抽象方法, 那么该接口就是函数式接口
@@ -21,3 +27,6 @@ lambada表达式的基本结构:
     * for循环是**外部迭代**(即需要一个迭代器去对集合的元素进行迭代)
     * forEach()是**内部迭代**
 
+## 函数式接口
+* [function接口](src/java/util/function/Function.java)(理解function接口实际传入的是一种行为):[使用示例](../Test/src/JavaSE/lambda/FunctionTest.java)
+* [comparator接口](src/java/util/Comparator.java):[使用示例](../Test/src/JavaSE/lambda/StringComparator.java)
