@@ -30,3 +30,8 @@ lambada表达式的基本结构:
 ## 函数式接口
 * [function接口](src/java/util/function/Function.java)(理解function接口实际传入的是一种行为):[使用示例](../Test/src/JavaSE/lambda/FunctionTest.java)
 * [comparator接口](src/java/util/Comparator.java):[使用示例](../Test/src/JavaSE/lambda/StringComparator.java)
+### function的compose和addThen
+function接口中除了apply方法还有两个default方法:
+[compose和addThen方法使用示例](../Test/src/JavaSE/lambda/FunctionTest2.java)
+1. function1.compose(function2).apply(value): 先执行function2的apply的方法,再执行function1的
+2. function1.addThen(function2).apply(value): 先执行function1的apply的方法,再执行function1的 

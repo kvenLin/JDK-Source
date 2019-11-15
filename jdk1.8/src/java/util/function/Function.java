@@ -63,6 +63,7 @@ public interface Function<T, R> {
      *
      * @see #andThen(Function)
      */
+    //先应用before的function再应用当前的function
     default <V> Function<V, R> compose(Function<? super V, ? extends T> before) {
         Objects.requireNonNull(before);
         return (V v) -> apply(before.apply(v));
@@ -83,6 +84,7 @@ public interface Function<T, R> {
      *
      * @see #compose(Function)
      */
+    //先应用当前的function再应用after的function
     default <V> Function<T, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (T t) -> after.apply(apply(t));
