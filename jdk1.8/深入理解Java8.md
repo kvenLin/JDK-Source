@@ -35,3 +35,6 @@ function接口中除了apply方法还有两个default方法:
 [compose和addThen方法使用示例](../Test/src/JavaSE/lambda/FunctionTest2.java)
 1. function1.compose(function2).apply(value): 先执行function2的apply的方法,再执行function1的
 2. function1.addThen(function2).apply(value): 先执行function1的apply的方法,再执行function1的 
+### Predicate
+[Predicate](src/java/util/function/Predicate.java):实际上就是给定一个条件判定是真还是假,[使用示例](../Test/src/JavaSE/lambda/PredicateTest2.java)
+

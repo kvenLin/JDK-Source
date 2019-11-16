@@ -3,7 +3,6 @@ package lambda.applycation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +23,13 @@ public class PersonTest {
         List<Person> personList = test.getPersonByUsername("zhangsan", persons);
         personList.forEach(person -> System.out.println(person.getUsername()));
 
+        List<Person> list = test.getPersonByAge(20, persons);
+        list.forEach(person -> System.out.println(person.getAge()));
 
+        List<Person> list1 = test.getPersonsByAge2(30, persons,
+                (ageOfPerson, people) -> people.stream().filter(person -> person.getAge() > ageOfPerson)
+                        .collect(Collectors.toList()));
+        list1.forEach(person -> System.out.println(person.getAge()));
     }
 
     public List<Person> getPersonByUsername(String username, List<Person> persons) {
@@ -34,9 +39,12 @@ public class PersonTest {
     }
 
     public List<Person> getPersonByAge(int age, List<Person> persons) {
-        BiFunction<Integer, List<Person>, List<Person>> biFunction = (integer, people) -> {
-            return people.stream().filter(person -> person.getAge() < age).collect(Collectors.toList());
-        };
+        BiFunction<Integer, List<Person>, List<Person>> biFunction = (ageOfPerson, people) -> people.stream()
+                .filter(person -> person.getAge() > ageOfPerson).collect(Collectors.toList());
         return biFunction.apply(age, persons);
+    }
+
+    public List<Person> getPersonsByAge2(int age, List<Person> people, BiFunction<Integer, List<Person>, List<Person>> biFunction) {
+        return biFunction.apply(age, people);
     }
 }
