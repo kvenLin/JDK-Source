@@ -780,7 +780,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                             next = e.next;
                             //这个地方很巧秒，通过e.hash & oldCap来得出newTab中的位置
                             //因为table是2倍扩容，所以只需要看hash值与oldCap进行操作，结果为0，那么还是原来的index；否则index = index + oldCap
-                            if ((e.hash & oldCap) == 0) {//判断倒数第五位是否为0
+                            if ((e.hash & oldCap) == 0) {
+                                //对lo链表添加新的节点
                                 if (loTail == null)
                                     loHead = e;
                                 else
@@ -788,6 +789,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                                 loTail = e;
                             }
                             else {
+                                //对hi链表添加新的节点
                                 if (hiTail == null)
                                     hiHead = e;
                                 else
@@ -795,12 +797,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                                 hiTail = e;
                             }
                         } while ((e = next) != null);
-                        //原索引放到bucket里
+                        //即e.hash & oldCap == 0的链表, 索引不会发生变化, 直接放入newTable中 原索引 位置
                         if (loTail != null) {
                             loTail.next = null;
                             newTab[j] = loHead;
                         }
-                        //原索引 + oldCap放到bucket里
+                        //即e.hash & oldCap != 0的链表, 索引会发生变化, 在原索引 + oldCap位置, 放到newTable中
                         if (hiTail != null) {
                             hiTail.next = null;
                             newTab[j + oldCap] = hiHead;

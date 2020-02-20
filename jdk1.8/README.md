@@ -130,6 +130,7 @@ jdk源码学习
 * 实现了 List接口,Deque接口的双端链表
 
 ## HashMap_jdk1.8(非线程安全)
+[HashMap源码注释分析](../jdk1.8/src/java/util/HashMap.java)
 
 ![结构视图](../Test/src/main/java/image/HashMap_1.8.png)
 
@@ -169,6 +170,10 @@ jdk源码学习
 
 * 多线程操作时主要存在线程安全的方法是: resize()
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
+* resize流程:
+    * 具体流程分析和索引计算原理参考博客: [HashMap的resize()扩容分析](https://blog.csdn.net/Box_clf/article/details/104414723)
+> 如果需要使用该流程图请注明出处,谢谢
+![HashMap进行resize流程](../Test/src/image/HashMap_resize.jpg)
 * [为什么HashMap1.7存在死循环问题?](https://blog.csdn.net/bjwfm2011/article/details/81076736)
 
 ## TreeMap(非线程安全)
