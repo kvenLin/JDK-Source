@@ -172,7 +172,7 @@ jdk源码学习
 >resize主要工作: 当扩容时需要遍历将oldTab中的所有node节点,并计算出新的索引位置后,转移到newTable
 * resize流程:
     * 具体流程分析和索引计算原理参考博客: [HashMap的resize()扩容分析](https://blog.csdn.net/Box_clf/article/details/104414723)
-> 如果需要使用该流程图请注明出处,谢谢
+    
 ![HashMap进行resize流程](../Test/src/image/HashMap_resize.jpg)
 * [为什么HashMap1.7存在死循环问题?](https://blog.csdn.net/bjwfm2011/article/details/81076736)
 
@@ -195,7 +195,7 @@ jdk源码学习
 * 每次插入数据时会增加节点,访问或修改数据时会调整链表的节点顺序,从而决定迭代时输出的顺序
     * accessOrder若为**false**(默认情况下为false),遍历双向链表时,是按照**插入顺序排序的**
     * accessOrder若为**true**(需要通过下面的构造方法进行设置),表示双向链表中的元素按照**访问的先后顺序排序**,最先遍历(链表头)的是**最近最少使用的元素**
-```java_holder_method_tree
+```java
     public LinkedHashMap(int initialCapacity,
                          float loadFactor,
                          boolean accessOrder) {
@@ -228,7 +228,7 @@ jdk源码学习
 ![1.8时](../Test/src/main/java/image/ConcurrentHashMap1.8.png)
 ### 1.8核心源码解析
 * put方法：
-```
+```java
 public V put(K key, V value) {
     return putVal(key, value, false);
 }
@@ -348,7 +348,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 * 没成功，则addWaiter()将该线程加入等待队列的尾部，并标记为独占模式；
 * acquireQueued()使线程在等待队列中休息，有机会时（轮到自己，会被unpark()）会去尝试获取资源。获取到资源后才返回。如果在整个等待过程中被中断过，则返回true，否则返回false。
 * 如果线程在等待过程中被中断过，它是不响应的。只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。
-
+>这里主要分析一下以非公平锁的简单流程, 具体流程后续会以ReentrantLock进行分析
 ![流程图示](../Test/src/main/java/image/AQS.png)
 
 ## synchronized 和 ReentrantLock
@@ -365,7 +365,18 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         > 加锁时不考虑排队等待问题，直接尝试获取锁，获取不到自动到队尾等待
     * 默认使用的是非公平锁(Nonfair):
     > 在获取时先cas改变一下 AQS 的state值, 改变成功就获取, 不然就加入到  AQS 的 Sync Queue 里面
-    
+* ReentrantLock的lock流程(默认使用的事非公平锁):
+
+![ReentrantLock_lock](../Test/src/image/ReentrantLock_lock.jpg)
+
+* unlock()方法:
+    * 调用Sync.release,实际是AQS的release方法,内部调用的Sync重写的tryRelease方法,主要进行两个操作:
+        1. 将独占线程置空
+        2. 更新state状态量
+    * tryRelease成功后进行后继节点的唤醒操作
+* ReentrantLock的unlock流程:
+
+![ReentrantLock_unlock](../Test/src/image/ReentrantLock_unlock.jpg) 
 ### synchronized和ReentrantLock异同
 * 相同:
     * 都实现了多线程同步和内存可见性语义
@@ -385,7 +396,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         * synchronized不可设置等待时间、不可被中断（interrupted）
 ## 类加载源码分析
 ### 核心源码解读
-```
+```java
 protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException//
     {

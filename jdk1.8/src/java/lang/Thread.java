@@ -943,6 +943,7 @@ class Thread implements Runnable {
      * @revised 6.0
      */
     public static boolean interrupted() {
+        //判断当前是否中断,并且清空中断标记
         return currentThread().isInterrupted(true);
     }
 
@@ -960,6 +961,7 @@ class Thread implements Runnable {
      * @revised 6.0
      */
     public boolean isInterrupted() {
+        //判断当前线程是否中断,但是不清空中断标记
         return isInterrupted(false);
     }
 

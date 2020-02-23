@@ -816,8 +816,10 @@ public abstract class AbstractQueuedSynchronizer
         if (node == null)
             return;
 
+        //1. node不再关联到任何线程
         node.thread = null;
 
+        //2. 跳过被cancel的前继node，找到一个有效的前继节点pred
         // Skip cancelled predecessors
         Node pred = node.prev;
         while (pred.waitStatus > 0)
@@ -831,6 +833,7 @@ public abstract class AbstractQueuedSynchronizer
         // Can use unconditional write instead of CAS here.
         // After this atomic step, other Nodes can skip past us.
         // Before, we are free of interference from other threads.
+        //3. 将node的waitStatus置为CANCELLED
         node.waitStatus = Node.CANCELLED;
 
         // If we are the tail, remove ourselves.
@@ -840,6 +843,9 @@ public abstract class AbstractQueuedSynchronizer
             // If successor needs signal, try to set pred's next-link
             // so it will get one. Otherwise wake it up to propagate.
             int ws;
+            //5. 如果node既不是tail，又不是head的后继节点
+            //则将node的前继节点的waitStatus置为SIGNAL
+            //并使node的前继节点指向node的后继节点
             if (pred != head &&
                 ((ws = pred.waitStatus) == Node.SIGNAL ||
                  (ws <= 0 && compareAndSetWaitStatus(pred, ws, Node.SIGNAL))) &&
@@ -848,6 +854,7 @@ public abstract class AbstractQueuedSynchronizer
                 if (next != null && next.waitStatus <= 0)
                     compareAndSetNext(pred, predNext, next);
             } else {
+                //6. 如果node是head的后继节点，则直接唤醒node的后继节点
                 unparkSuccessor(node);
             }
 
@@ -918,7 +925,9 @@ public abstract class AbstractQueuedSynchronizer
      */
     private final boolean parkAndCheckInterrupt() {
         LockSupport.park(this);//调用park()使线程进入waiting状态
-        return Thread.interrupted();//如果被唤醒，查看自己是不是被中断的。
+        //获取线程中断状态,interrupted()是判断当前中断状态，
+        //并非中断线程，因此可能true也可能false,并返回
+        return Thread.interrupted();//如果被唤醒，查看自己是不是被中断的。并且清空中断标记
     }
 
     /*

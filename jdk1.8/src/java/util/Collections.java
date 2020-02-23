@@ -2381,6 +2381,7 @@ public class Collections {
     }
 
     static <T> List<T> synchronizedList(List<T> list, Object mutex) {
+        //通过传入的 list 是否继承了 RandomAccess 接口来判断是链表还是数组,从而构建不同类型的线程安全的list
         return (list instanceof RandomAccess ?
                 new SynchronizedRandomAccessList<>(list, mutex) :
                 new SynchronizedList<>(list, mutex));
