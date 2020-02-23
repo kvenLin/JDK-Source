@@ -381,6 +381,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     /**
      * Returns a power of two size for the given target capacity.
      */
+    //对传入的cap值进行格式化, 即始终保证容量为 2^x 的大小
     static final int tableSizeFor(int cap) {
         int n = cap - 1;
         n |= n >>> 1;
