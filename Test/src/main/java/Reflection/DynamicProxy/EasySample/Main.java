@@ -16,7 +16,8 @@ public class Main {
         //创建代理需要的handler
         WorkHandler workHandler = new WorkHandler(work);
         //获取代理的对象
-        Work proxy = (Work) Proxy.newProxyInstance(work.getClass().getClassLoader(), work.getClass().getInterfaces(), workHandler);
+//        Work proxy = (Work) Proxy.newProxyInstance(work.getClass().getClassLoader(), work.getClass().getInterfaces(), workHandler);
+        Work proxy = (Work) workHandler.bind();
         proxy.say();
     }
     /**

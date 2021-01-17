@@ -416,6 +416,7 @@ public class Proxy implements java.io.Serializable {
         // If the proxy class defined by the given loader implementing
         // the given interfaces exists, this will simply return the cached copy;
         // otherwise, it will create the proxy class via the ProxyClassFactory
+        //如果缓存中有这个代理类就直接返回
         return proxyClassCache.get(loader, interfaces);
     }
 

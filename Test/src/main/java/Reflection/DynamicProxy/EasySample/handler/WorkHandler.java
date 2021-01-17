@@ -2,6 +2,7 @@ package Reflection.DynamicProxy.EasySample.handler;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * @Author: clf
@@ -22,5 +23,10 @@ public class WorkHandler implements InvocationHandler {
         Object result = method.invoke(object, objects);
         System.out.println("=================== after ==================");
         return result;
+    }
+
+    public Object bind() {
+        Class cls = object.getClass();
+        return Proxy.newProxyInstance(cls.getClassLoader(), cls.getInterfaces(), this);
     }
 }
