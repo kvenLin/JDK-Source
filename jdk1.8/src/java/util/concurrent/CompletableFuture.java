@@ -432,6 +432,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * Starts the given async task using the given executor, unless
      * the executor is ForkJoinPool.commonPool and it has been
      * disabled, in which case starts a new thread.
+     * 采用ForkJoinPool.commonPool线程池执行任务
      */
     static void execAsync(Executor e, Async r) {
         if (e == ForkJoinPool.commonPool() &&
@@ -2364,6 +2365,13 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
 
     // CompletionStage methods
 
+    /**
+     * 上一个任务完成后执行下一个任务, 需要上一个任务的结果
+     * @param fn the function to use to compute the value of
+     * the returned CompletionStage
+     * @return
+     * @param <U>
+     */
     public <U> CompletableFuture<U> thenApply
         (Function<? super T,? extends U> fn) {
         return doThenApply(fn, null);
@@ -2415,6 +2423,16 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
         return doThenRun(action, executor);
     }
 
+    /**
+     * 解释一下作用:
+     * 1. thenCombine方法是将两个CompletionStage的任务都执行完成后, 将两个任务的结果一块交给thenCombine来处理
+     * @param other the other CompletionStage
+     * @param fn the function to use to compute the value of
+     * the returned CompletionStage
+     * @return
+     * @param <U>
+     * @param <V>
+     */
     public <U,V> CompletableFuture<V> thenCombine
         (CompletionStage<? extends U> other,
          BiFunction<? super T,? super U,? extends V> fn) {
@@ -2541,6 +2559,17 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
         return doRunAfterEither(other.toCompletableFuture(), action, executor);
     }
 
+    /**
+     * 中文解释一下作用:
+     * 1. 本CompletableFuture执行完毕后,
+     * 2. 会执行fn函数,
+     * 3. fn函数返回一个新的CompletableFuture,
+     * 4. 本CompletableFuture的结果会作为fn函数返回的CompletableFuture的参数,
+     * 5. 返回一个新的CompletableFuture
+     * @param fn the function returning a new CompletionStage
+     * @return
+     * @param <U>
+     */
     public <U> CompletableFuture<U> thenCompose
         (Function<? super T, ? extends CompletionStage<U>> fn) {
         return doThenCompose(fn, null);
